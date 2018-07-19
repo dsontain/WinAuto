@@ -189,6 +189,7 @@ def run_assd(target = "F"):
     else:
         print(23)
 
+
 def close_window(window="TxBENCH - New project"):
     """关闭窗口
 
@@ -197,6 +198,8 @@ def close_window(window="TxBENCH - New project"):
     """
 
     win32gui.PostMessage(win32gui.FindWindow(0, window), win32con.WM_CLOSE, 0, 0)
+
+
 
 def run_CrystalDiskMark5(target = "T"):
 
@@ -241,6 +244,9 @@ def run_CrystalDiskMark5(target = "T"):
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
 
 
+
+
+
 def run_ATTO_Disk_Benchmark(target = "T"):
 
     tool = "Untitled - ATTO Disk Benchmark"
@@ -270,11 +276,22 @@ def run_ATTO_Disk_Benchmark(target = "T"):
         time.sleep(1)
         elapsed_time = time.time() - start_time
         assert elapsed_time < 600 , "timeout!"
+        #print(type(win32gui.GetWindowText(hwndChildList[-10])))
+    #print(win32gui.GetWindowText(hwndChildList[-10]))
+    #print(type(win32gui.GetWindowText(hwndChildList[-10])))
 
     filename = "{}.bmp".format(tool)
+
+    # x1, y1, x2, y2 = win32gui.GetWindowRect(hwnd)
+    # x1 = x1 + 7
+    # x2 = x2 - 9
+    # y2 = y2 - 8
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
 
     print("run {} finished!".format(tool))
+
+
+
 
 
 def run_TxBENCH(target = "T"):
@@ -305,6 +322,7 @@ def run_TxBENCH(target = "T"):
 
 
 def run_HDtune(disk_number=100):
+
     a = diskpart_tool.DiskPart()
     a.clean(disk_number)#删除文件系统
     tool = "HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 "
@@ -368,6 +386,8 @@ def run_HDtune(disk_number=100):
     filename = "HDtune_read.bmp"
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
 
+
+
 def run_performance(disk_number=100, partition_name = "A"):
 
     a = diskpart_tool.DiskPart()
@@ -399,6 +419,12 @@ def run_CrystalDiskInfo(target = "T"):
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     print("run {} finished!".format(tool))
 
+
+
+
+
+
+
 def run_system_benchmark(disk_number=100, partition_name = "C"):
     run_assd(partition_name)
     time.sleep(2)
@@ -408,5 +434,89 @@ def run_system_benchmark(disk_number=100, partition_name = "C"):
     time.sleep(2)
 
 
+
+
+
+
 if __name__ == "__main__":
     get_all_child("CrystalDiskInfo 7.6.0 ")
+#run_TxBENCH("A")
+# # run_performance(disk_number=2,partition_name = "A")
+# #run_assd("A")
+# #run_CrystalDiskMark5("A")
+# #run_ATTO_Disk_Benchmark("A")
+
+# get_all_child("HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 ")
+# get_all_child("警告!")
+# # hwnd = win32gui.FindWindow(None, "TxBENCH - New project")
+# #设置assd窗口为焦点
+# #win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
+
+
+# hwndChildList = get_child_windows(hwnd)
+# #print(hwndChildList)
+# #磁盘选择窗口/磁盘名称窗口/开始按键
+
+# print(win32gui.GetWindowText(hwndChildList[13]))
+
+
+# disk_select = hwndChildList[10]
+# disk_name = hwndChildList[25]
+# #start_button = hwndChildList[24]
+# write_aactime = hwndChildList[31]
+# #write_aactime_init = win32gui.GetWindowText(write_aactime)
+# disk_select_init = win32gui.GetWindowText(disk_name)
+# #print(disk_select_init)
+# #选择待测试磁盘
+# xy = button_center(disk_select)
+# mouse_click(xy[0], xy[1])
+# time.sleep(0.5)
+# keybd_single_char("C")
+# disk_select_init = win32gui.GetWindowText(disk_name)
+
+# time.sleep(0.5)
+# keybd_single_char(target)
+# mouse_click(xy[0], xy[1])
+#run_ATTO_Disk_Benchmark()
+
+    # x1, y1, x2 ,y2 = win32gui.GetWindowRect(hwndChildList[0])
+
+    # disk_select_xy = [x1 + 300, y1 + 25]
+    # start_xy = [x1 + 50, y1 + 35]
+
+    # mouse_click(disk_select_xy[0], disk_select_xy[1], cnt=2)
+    # keybd_single_char(target)
+    # time.sleep(0.5)
+    # #开始测试
+    # mouse_click(start_xy[0], start_xy[1])
+    # time.clock()
+
+
+
+    # while True:
+    #     print(win32gui.GetWindowText(hwnd))
+    #     time.sleep(1)
+    #win32api.get
+
+#run_CrystalDiskMark5()
+
+#run_assd()
+# tool = "AS SSD Benchmark 1.9.5986.35387"
+# tool_path = r'start "aa" "D:\AS SSD Benchmark\AS SSD Benchmark.exe"'
+# #os.system(tool_path)
+# run_assd('T')
+# hwnd = win32gui.FindWindow(None, tool)
+# print(win32gui.GetWindowRect(hwnd))
+
+# tool = "CrystalDiskMark 5.1.2 x64"
+# hwnd = win32gui.FindWindow(None, tool)
+# #x1, y1, x2, y2 = win32gui.GetWindowRect(hwnd)
+# x1, y1, x2, y2 = win32gui.GetWindowRect(hwnd)
+# x1 = x1 + 7
+# x2 = x2 - 9
+# y2 = y2 - 8
+# filename = "{}.png".format(tool)
+# position=(x1, y1, x2, y2,)
+# #position=(100, 100, 200, 200,)
+# screenshot(filename= filename, position=position)
+# print(hwnd)
