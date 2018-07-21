@@ -15,12 +15,17 @@ import screenPrt
 
 tool_dic = {
     "ASSD"  : ("AS SSD Benchmark 1.9.5986.35387", r"D:\SSD performance\AS SSD Benchmark\AS SSD Benchmark.exe"),
-    "CDM"   : ("CrystalDiskMark 5.1.2 x64", r"D:\SSD performance\CrystalDiskMark5\DiskMark64.exe"),
+    "CDM"   : ("CrystalDiskMark 6.1.0 Beta1 x64", r"D:\SSD performance\CrystalDiskMark6_1\DiskMark64.exe"),
+    #"CDM"   : ("CrystalDiskMark 5.1.2 x64", r"D:\SSD performance\CrystalDiskMark5\DiskMark64.exe"),
     "ATTO"  : ("Untitled - ATTO Disk Benchmark", r"D:\SSD performance\ATTO Disk Benchmark\ATTO Disk Benchmark.exe"),
     "TXB"   : ("TxBENCH - New project", r"D:\SSD performance\TxBENCH.exe"),
-    "HDtune": ("HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 ", "D:\SSD performance\HD Tune Pro.exe")
+    "HDtune": ("HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 ", r"D:\SSD performance\HD Tune Pro.exe"),
+    "Anvil" : ("Anvil's Storage Utilities 1.1.0 (2014-January-1)", r"D:\SSD performance\Anvil`s Storage Utilities\AnvilPro.exe")
 }
+    
 
+
+#CrystalDiskMark6_1
 
 
 
@@ -108,6 +113,7 @@ def button_center(phwnd):
 def run_tool(tool="", wait = 5):
 
     cmd = 'start "aa" "{}"'.format(tool)
+    os.system(cmd)
     time.sleep(wait)
 
 def run_assd(target = "F"):
@@ -186,21 +192,121 @@ def run_CrystalDiskMark5(target = "T"):
     start_xy = [x1 + 50, y1 + 35]
 
     mouse_click(disk_select_xy[0], disk_select_xy[1])
-    keybd_single_char(target)
     mouse_click(disk_select_xy[0], disk_select_xy[1])
+    keybd_single_char(target)
 
     #开始测试
     mouse_click(start_xy[0], start_xy[1])
+    if "CrystalDiskMark 5." in tool:
 
-    #判断运行状态是否结束，当window name 不等于Random Write 4KiB [5/5]，并且为tool 名称时，则为结束
-    while win32gui.GetWindowText(hwnd) == "Random Write 4KiB [5/5]":
+        run_check = [#"Sequential Read Multi [5/5]", 
+                    "Sequential Write Multi [5/5]",
+                    #"Random Read 4KiB Multi [5/5]",
+                    "Random Write 4KiB Multi [5/5]",
+                    #"Sequential Read [5/5]",
+                    "Sequential Write [5/5]",
+                    "Random Write 4KiB [5/5]"
+                    ]
+    elif "CrystalDiskMark 6." in tool:
+
+        run_check = [#"Sequential Read Multi [5/5]", 
+                    # "Sequential Write Multi [5/5]",
+                    # #"Random Read 4KiB Multi [5/5]",
+                    # "Random Write 4KiB Multi [5/5]",
+                    #"Sequential Read [5/5]",
+                    "Sequential Write [5/5]",
+                    "Interval Time 1/5 sec",
+                    "Random Write 4KiB [5/5]",
+                    "Interval Time 1/5 sec",
+                    "Random Write 4KiB [5/5]",
+                    "Interval Time 1/5 sec",
+                    "Random Write 4KiB [5/5]"
+                    ]
+    for status in run_check:
+        while True:
+            if win32gui.GetWindowText(hwnd) != status:
+                time.sleep(0.1)
+            else:
+                time.sleep(1)
+                break
+        print(status)
+
+    while win32gui.GetWindowText(hwnd) != tool:
         time.sleep(1)
-        if win32gui.GetWindowText(hwnd) == tool:
-            print("run {} finished!".format(tool))
-            break
+
     filename = "{}.bmp".format(tool)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
+
+
+def run_Anvil(target = "T"):
+
+    tool = "Anvil's Storage Utilities 1.1.0 (2014-January-1)"
+    tool, tool_path= tool_dic["Anvil"]
+    run_tool(tool_path)
+    
+    #找到tool 所在的窗口
+    hwnd = win32gui.FindWindow(None, tool)
+    #设置窗口为焦点
+    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
+
+    assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
+
+    hwndChildList = get_child_windows(hwnd)
+    x1, y1, x2 ,y2 = win32gui.GetWindowRect(hwndChildList[0])
+
+    disk_select_xy = [x1 + 300, y1 + 25]
+    start_xy = [x1 + 50, y1 + 35]
+
+    mouse_click(disk_select_xy[0], disk_select_xy[1])
+    mouse_click(disk_select_xy[0], disk_select_xy[1])
+    keybd_single_char(target)
+
+    #开始测试
+    mouse_click(start_xy[0], start_xy[1])
+    if "CrystalDiskMark 5." in tool:
+
+        run_check = [#"Sequential Read Multi [5/5]", 
+                    "Sequential Write Multi [5/5]",
+                    #"Random Read 4KiB Multi [5/5]",
+                    "Random Write 4KiB Multi [5/5]",
+                    #"Sequential Read [5/5]",
+                    "Sequential Write [5/5]",
+                    "Random Write 4KiB [5/5]"
+                    ]
+    elif "CrystalDiskMark 6." in tool:
+
+        run_check = [#"Sequential Read Multi [5/5]", 
+                    # "Sequential Write Multi [5/5]",
+                    # #"Random Read 4KiB Multi [5/5]",
+                    # "Random Write 4KiB Multi [5/5]",
+                    #"Sequential Read [5/5]",
+                    "Sequential Write [5/5]",
+                    "Interval Time 1/5 sec",
+                    "Random Write 4KiB [5/5]",
+                    "Interval Time 1/5 sec",
+                    "Random Write 4KiB [5/5]",
+                    "Interval Time 1/5 sec",
+                    "Random Write 4KiB [5/5]"
+                    ]
+    for status in run_check:
+        while True:
+            if win32gui.GetWindowText(hwnd) != status:
+                time.sleep(0.1)
+            else:
+                time.sleep(1)
+                break
+        print(status)
+
+    while win32gui.GetWindowText(hwnd) != tool:
+        time.sleep(1)
+
+    filename = "{}.bmp".format(tool)
+    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    close_window(tool)
+
+
+
 
 
 def run_ATTO_Disk_Benchmark(target = "T"):
@@ -265,7 +371,7 @@ def run_TxBENCH(target = "T"):
     while  win32gui.GetWindowText(hwndChildList[13]) != start_init:
         time.sleep(1)
         elapsed_time = time.time() - start_time
-        assert elapsed_time < 600 , "timeout!"
+        assert elapsed_time < 6000 , "timeout!"
 
     filename = "{}.bmp".format(tool)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
@@ -370,6 +476,7 @@ def run_performance(disk_number=100, partition_name = "A"):
 
 if __name__ == "__main__" :
     #run_performance(disk_number=1, partition_name = "A")
-
-    tool, tool_path= tool_dic["CDM"]
-    run_tool(tool_path)
+    tool = "Anvil's Storage Utilities 1.1.0 (2014-January-1)"
+    hwnd = win32gui.FindWindow(None, tool)
+    print(hwnd)
+    get_all_child(tool)
