@@ -56,9 +56,9 @@ def get_all_child(tool="Untitled - ATTO Disk Benchmark"):
     print(hwndChildList)
     a = ""
     for k in hwndChildList:
-        b = "{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k))
-        print("{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k)))
-        a = a + "\n" + b
+        b = "{}---{}---{}---{}---{}".format(hwndChildList.index(k),k,win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k))
+        #print("{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k)))
+        a = a  + b + "\n"
     return a
 
 
@@ -246,64 +246,35 @@ def run_Anvil(target = "T"):
 
     tool = "Anvil's Storage Utilities 1.1.0 (2014-January-1)"
     tool, tool_path= tool_dic["Anvil"]
-    run_tool(tool_path)
+    run_tool(tool_path,7)
     
     #找到tool 所在的窗口
     hwnd = win32gui.FindWindow(None, tool)
     #设置窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
-
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
-
     hwndChildList = get_child_windows(hwnd)
-    x1, y1, x2 ,y2 = win32gui.GetWindowRect(hwndChildList[0])
-
-    disk_select_xy = [x1 + 300, y1 + 25]
-    start_xy = [x1 + 50, y1 + 35]
-
-    mouse_click(disk_select_xy[0], disk_select_xy[1])
-    mouse_click(disk_select_xy[0], disk_select_xy[1])
+    hwnd_QD_Write = win32gui.FindWindow(None, "IO - Threaded QD (Random Write)")
+    
+    disk_select = button_center(hwndChildList[8])
+    disk_run = button_center(hwndChildList[14])
+    mouse_click(disk_select[0], disk_select[1])
+    mouse_click(disk_select[0], disk_select[1])
     keybd_single_char(target)
 
+    mouse_click(disk_run[0], disk_run[1])
+    # #print(disk_select)
+    # mouse_move(disk_select[0], disk_select[1])
+    
+    for i in range(0, 3):
+        while not win32gui.IsWindowVisible(hwnd_QD_Write):
+            time.sleep(0.1)
+        while win32gui.IsWindowVisible(hwnd_QD_Write):
+            time.sleep(0.1)
+    else:
+        time.sleep(3)
+    
     #开始测试
-    mouse_click(start_xy[0], start_xy[1])
-    if "CrystalDiskMark 5." in tool:
-
-        run_check = [#"Sequential Read Multi [5/5]", 
-                    "Sequential Write Multi [5/5]",
-                    #"Random Read 4KiB Multi [5/5]",
-                    "Random Write 4KiB Multi [5/5]",
-                    #"Sequential Read [5/5]",
-                    "Sequential Write [5/5]",
-                    "Random Write 4KiB [5/5]"
-                    ]
-    elif "CrystalDiskMark 6." in tool:
-
-        run_check = [#"Sequential Read Multi [5/5]", 
-                    # "Sequential Write Multi [5/5]",
-                    # #"Random Read 4KiB Multi [5/5]",
-                    # "Random Write 4KiB Multi [5/5]",
-                    #"Sequential Read [5/5]",
-                    "Sequential Write [5/5]",
-                    "Interval Time 1/5 sec",
-                    "Random Write 4KiB [5/5]",
-                    "Interval Time 1/5 sec",
-                    "Random Write 4KiB [5/5]",
-                    "Interval Time 1/5 sec",
-                    "Random Write 4KiB [5/5]"
-                    ]
-    for status in run_check:
-        while True:
-            if win32gui.GetWindowText(hwnd) != status:
-                time.sleep(0.1)
-            else:
-                time.sleep(1)
-                break
-        print(status)
-
-    while win32gui.GetWindowText(hwnd) != tool:
-        time.sleep(1)
-
     filename = "{}.bmp".format(tool)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
@@ -479,25 +450,18 @@ def run_performance(disk_number=100, partition_name = "A"):
 
 if __name__ == "__main__" :
     #run_performance(disk_number=1, partition_name = "A")
-    tool = "Anvil's Storage Utilities 1.1.0 (2014-January-1)"
-    hwnd = win32gui.FindWindow(None, tool)
-    print(hwnd)
-    hwndChildList = get_child_windows(hwnd)
-    #x1, y1, x2 ,y2 = win32gui.GetWindowRect(hwndChildList[8])
+    run_Anvil("G")
 
-   
-    disk_select = button_center(hwndChildList[6])
-    disk_run = button_center(hwndChildList[10])
-    #print(disk_select)
-    mouse_move(disk_select[0], disk_select[1])
-    mouse_move(disk_run[0], disk_run[1])
-    # for i in range(0, 300):
-    #     filename = "%d.txt" %i
-    #     with open(filename,"w") as f:
-    #         f.write(get_all_child(tool))
-    #         f.flush()
-    #         time.sleep(1)
-    # k = 2425390
 
-    # print(win32gui.GetWindowText(k))
-    #print("{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k)))
+    #"IO - Threaded QD (Random Write)"
+    #print(win32gui.IsWindowVisible(hwnd))
+    #print(hwndChildList.index("IO - Threaded QD (Random Read)"))
+    # #x1, y1, x2 ,y2 = win32gui.GetWindowRect(hwndChildList[8])
+
+    # print(get_all_child(tool))
+    # disk_select = button_center(hwndChildList[8])
+    # disk_run = button_center(hwndChildList[14])
+    # #print(disk_select)
+    # mouse_move(disk_select[0], disk_select[1])
+
+    
