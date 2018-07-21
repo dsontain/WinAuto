@@ -54,9 +54,12 @@ def get_all_child(tool="Untitled - ATTO Disk Benchmark"):
     hwnd = win32gui.FindWindow(None, tool)
     hwndChildList = get_child_windows(hwnd)
     print(hwndChildList)
+    a = ""
     for k in hwndChildList:
+        b = "{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k))
         print("{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k)))
-
+        a = a + "\n" + b
+    return a
 
 
 def mouse_move(new_x, new_y):
@@ -479,4 +482,22 @@ if __name__ == "__main__" :
     tool = "Anvil's Storage Utilities 1.1.0 (2014-January-1)"
     hwnd = win32gui.FindWindow(None, tool)
     print(hwnd)
-    get_all_child(tool)
+    hwndChildList = get_child_windows(hwnd)
+    #x1, y1, x2 ,y2 = win32gui.GetWindowRect(hwndChildList[8])
+
+   
+    disk_select = button_center(hwndChildList[6])
+    disk_run = button_center(hwndChildList[10])
+    #print(disk_select)
+    mouse_move(disk_select[0], disk_select[1])
+    mouse_move(disk_run[0], disk_run[1])
+    # for i in range(0, 300):
+    #     filename = "%d.txt" %i
+    #     with open(filename,"w") as f:
+    #         f.write(get_all_child(tool))
+    #         f.flush()
+    #         time.sleep(1)
+    # k = 2425390
+
+    # print(win32gui.GetWindowText(k))
+    #print("{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k)))
