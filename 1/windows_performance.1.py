@@ -10,25 +10,20 @@ import subprocess
 import threading
 import diskpart_tool
 import screenPrt
-
+import unittest
 
 
 tool_dic = {
     "ASSD"  : ("AS SSD Benchmark 1.9.5986.35387", r"D:\SSD performance\AS SSD Benchmark\AS SSD Benchmark.exe"),
-    "CDM"   : ("CrystalDiskMark 6.1.0 Beta1 x64", r"D:\SSD performance\CrystalDiskMark6_1\DiskMark64.exe"),
+    "CDM"   : ("CrystalDiskMark 6.0.1 x64", r"D:\SSD performance\CrystalDiskMark6_0_1DiskMark64.exe"),
     #"CDM"   : ("CrystalDiskMark 5.1.2 x64", r"D:\SSD performance\CrystalDiskMark5\DiskMark64.exe"),
     "ATTO"  : ("Untitled - ATTO Disk Benchmark", r"D:\SSD performance\ATTO Disk Benchmark\ATTO Disk Benchmark.exe"),
     "TXB"   : ("TxBENCH - New project", r"D:\SSD performance\TxBENCH.exe"),
     "HDtune": ("HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 ", r"D:\SSD performance\HD Tune Pro.exe"),
-    "Anvil" : ("Anvil's Storage Utilities 1.1.0 (2014-January-1)", r"D:\SSD performance\Anvil`s Storage Utilities\AnvilPro.exe")
+    "Anvil" : ("Anvil's Storage Utilities 1.1.0 (2014-January-1)", r"D:\SSD performance\Anvil`s Storage Utilities\AnvilPro.exe"),
+    "CDI"   : ("CrystalDiskInfo 7.6.0 ", r"C:\Program Files (x86)\CrystalDiskInfo\DiskInfo32.exe")
 }
     
-
-
-#CrystalDiskMark6_1
-
-
-
 
 def get_child_windows(parent):
     """    获得parent的所有子窗口句柄
@@ -258,6 +253,7 @@ def run_Anvil(target = "T"):
     
     disk_select = button_center(hwndChildList[8])
     disk_run = button_center(hwndChildList[14])
+    disk_tmp = button_center(hwndChildList[10])
     mouse_click(disk_select[0], disk_select[1])
     mouse_click(disk_select[0], disk_select[1])
     keybd_single_char(target)
@@ -273,11 +269,18 @@ def run_Anvil(target = "T"):
             time.sleep(0.1)
     else:
         time.sleep(3)
-    
+   # win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
+    #time.sleep(3)
+
+ 
     #开始测试
+    mouse_click(disk_tmp[0], disk_tmp[1],2)
+    mouse_click(disk_tmp[0], disk_tmp[1],2)
     filename = "{}.bmp".format(tool)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
-    close_window(tool)
+    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    #time.sleep(10)
+    #close_window(tool)
 
 
 
@@ -354,6 +357,28 @@ def run_TxBENCH(target = "T"):
     close_window(tool)
 
 
+
+def get_DiskInfo(target = 0, image = ""):
+
+    tool, tool_path= tool_dic["CDI"]
+    run_tool(tool_path)
+
+    hwnd = win32gui.FindWindow(None, tool)#找到tool 的句柄
+    print(hwnd)
+    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0,2000,2000, win32con.SWP_SHOWWINDOW)#设置窗口为焦点
+    assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
+    hwndChildList = get_child_windows(hwnd)
+
+    target_button = button_center(hwndChildList[2 + target]) #获取所需磁盘的按键
+    mouse_click(target_button[0], target_button[1])
+
+    filename = "{}-{}.bmp".format(image,tool)
+    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+
+    print("run {} finished!".format(tool))
+    #close_window(tool)
+    return filename
+
 def run_HDtune(disk_number=100):
 
     a= diskpart_tool.DiskPart()
@@ -375,11 +400,7 @@ def run_HDtune(disk_number=100):
 
     disk_select = button_center(hwndChildList[0])
     mouse_click(disk_select[0], disk_select[1])
-    #keybd_single_char(target)
-    time.sleep(1)
     mouse_click(disk_select[0], disk_select[1] + 14 *(disk_number + 1))
-    #mouse_click(disk_select[0], disk_select[1] + 20*(disk_number + 1))
-    time.sleep(1)
 
     start_button = button_center(hwndChildList[13])
     read_button = button_center(hwndChildList[14])
@@ -428,7 +449,7 @@ def run_HDtune(disk_number=100):
     filename = "HDtune_read.bmp"
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
-
+    return filename
 
 def run_performance(disk_number=100, partition_name = "A"):
     # a = diskpart_tool.DiskPart()
@@ -448,20 +469,16 @@ def run_performance(disk_number=100, partition_name = "A"):
 
 
 
+
+
+
+
+
+
+
 if __name__ == "__main__" :
-    #run_performance(disk_number=1, partition_name = "A")
-    run_Anvil("G")
 
-
-    #"IO - Threaded QD (Random Write)"
-    #print(win32gui.IsWindowVisible(hwnd))
-    #print(hwndChildList.index("IO - Threaded QD (Random Read)"))
-    # #x1, y1, x2 ,y2 = win32gui.GetWindowRect(hwndChildList[8])
-
-    # print(get_all_child(tool))
-    # disk_select = button_center(hwndChildList[8])
-    # disk_run = button_center(hwndChildList[14])
-    # #print(disk_select)
-    # mouse_move(disk_select[0], disk_select[1])
+    get_DiskInfo(2, "ss")
+ 
 
     
