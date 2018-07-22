@@ -59,7 +59,7 @@ class DiskPart(object):
 
         return partition_pool
 
-    def create_partition_primary(self, disk_number=1, filesystem="ntfs", partition_name = "T"):
+    def create_partition_primary(self, disk_number=1, partition_name = "T", filesystem="ntfs"):
 
         cmd = "select disk %d\n" % disk_number
         cmd += "create partition primary\n"

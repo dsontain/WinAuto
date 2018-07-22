@@ -15,7 +15,7 @@ import unittest
 
 tool_dic = {
     "ASSD"  : ("AS SSD Benchmark 1.9.5986.35387", r"D:\SSD performance\AS SSD Benchmark\AS SSD Benchmark.exe"),
-    "CDM"   : ("CrystalDiskMark 6.0.1 x64", r"D:\SSD performance\CrystalDiskMark6_0_1DiskMark64.exe"),
+    "CDM"   : ("CrystalDiskMark 6.0.1 x64", r"D:\SSD performance\CrystalDiskMark6_0_1\DiskMark64.exe"),
     #"CDM"   : ("CrystalDiskMark 5.1.2 x64", r"D:\SSD performance\CrystalDiskMark5\DiskMark64.exe"),
     "ATTO"  : ("Untitled - ATTO Disk Benchmark", r"D:\SSD performance\ATTO Disk Benchmark\ATTO Disk Benchmark.exe"),
     "TXB"   : ("TxBENCH - New project", r"D:\SSD performance\TxBENCH.exe"),
@@ -280,7 +280,7 @@ def run_Anvil(target = "T"):
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     #time.sleep(10)
-    #close_window(tool)
+    close_window(tool)
 
 
 
@@ -303,7 +303,8 @@ def run_ATTO_Disk_Benchmark(target = "T"):
     hwndChildList = get_child_windows(hwnd)
 
     disk_select = button_center(hwndChildList[2])
-    mouse_move(disk_select[0], disk_select[1])
+    mouse_click(disk_select[0], disk_select[1])
+    mouse_click(disk_select[0], disk_select[1])
     keybd_single_char(target)
 
     start_button = button_center(hwndChildList[27])
@@ -312,8 +313,8 @@ def run_ATTO_Disk_Benchmark(target = "T"):
     start_time = time.time()
     while  win32gui.GetWindowText(hwndChildList[-10]) == "":
         time.sleep(1)
-        elapsed_time = time.time() - start_time
-        assert elapsed_time < 6000 , "timeout!"
+        # elapsed_time = time.time() - start_time
+        # assert elapsed_time < 6000 , "timeout!"
 
     filename = "{}.bmp".format(tool)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
@@ -322,12 +323,7 @@ def run_ATTO_Disk_Benchmark(target = "T"):
     os.system(cmd)
 
 
-
-
 def run_TxBENCH(target = "T"):
-
-    tool = "TxBENCH - New project"
-    tool_path = r'start "aa" "D:\SSD performance\TxBENCH.exe'
 
     tool, tool_path= tool_dic["TXB"]
     run_tool(tool_path)
@@ -338,8 +334,19 @@ def run_TxBENCH(target = "T"):
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
     hwndChildList = get_child_windows(hwnd)
-
     start_button = button_center(hwndChildList[13])
+
+    cnt  = win32api.GetLogicalDriveStrings().split(":\\\x00").index("G")
+    disk_select = button_center(hwndChildList[10])
+
+    mouse_click(disk_select[0], disk_select[1])
+    mouse_click(disk_select[0], disk_select[1])
+    
+
+    for k in range(0, cnt):
+        keybd_single_char("(")
+        time.sleep(1)
+    
     start_init = win32gui.GetWindowText(hwndChildList[13])
     mouse_click(start_button[0], start_button[1])
     time.sleep(4)
@@ -362,9 +369,7 @@ def get_DiskInfo(target = 0, image = ""):
 
     tool, tool_path= tool_dic["CDI"]
     run_tool(tool_path)
-
     hwnd = win32gui.FindWindow(None, tool)#找到tool 的句柄
-    print(hwnd)
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0,2000,2000, win32con.SWP_SHOWWINDOW)#设置窗口为焦点
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
     hwndChildList = get_child_windows(hwnd)
@@ -374,18 +379,13 @@ def get_DiskInfo(target = 0, image = ""):
 
     filename = "{}-{}.bmp".format(image,tool)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
-
     print("run {} finished!".format(tool))
-    #close_window(tool)
+    close_window(tool)
+    time.sleep(1)
     return filename
 
 def run_HDtune(disk_number=100):
 
-    a= diskpart_tool.DiskPart()
-    a.clean(disk_number)
-
-    tool = "HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 "
-    tool_path = r'start "aa" "D:\SSD performance\HD Tune Pro.exe'
 
     tool, tool_path= tool_dic["HDtune"]
     run_tool(tool_path)
@@ -399,7 +399,7 @@ def run_HDtune(disk_number=100):
 
 
     disk_select = button_center(hwndChildList[0])
-    mouse_click(disk_select[0], disk_select[1])
+    mouse_click(disk_select[0], disk_select[1], 2)
     mouse_click(disk_select[0], disk_select[1] + 14 *(disk_number + 1))
 
     start_button = button_center(hwndChildList[13])
@@ -410,25 +410,23 @@ def run_HDtune(disk_number=100):
     print(start_init)
     
     mouse_click(write_button[0],write_button[1])
-    time.sleep(0.5)
     mouse_click(start_button[0],start_button[1])
-    time.sleep(0.5)
+
     
     hwnd_write_yes_window = win32gui.FindWindow(None, "警告!")
     hwnd_ChildList = get_child_windows(hwnd_write_yes_window)
     run_write_button = button_center(hwnd_ChildList[3])
     confirm_button =  button_center(hwnd_ChildList[0])
-    mouse_click(run_write_button[0], run_write_button[1])
-    time.sleep(2)
-    
-    mouse_click(confirm_button[0], confirm_button[1])
+    mouse_click(run_write_button[0], run_write_button[1],2)
 
-    time.sleep(5)
+    
+    mouse_click(confirm_button[0], confirm_button[1], 5)
+
     start_time = time.time()
     while  win32gui.GetWindowText(hwndChildList[13]) != start_init:
         time.sleep(1)
-        elapsed_time = time.time() - start_time
-        assert elapsed_time < 600 , "timeout!"
+        #elapsed_time = time.time() - start_time
+        #assert elapsed_time < 600 , "timeout!"
     time.sleep(2)
     filename = "HDtune_write.bmp"
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
@@ -436,15 +434,14 @@ def run_HDtune(disk_number=100):
 
     time.sleep(4)
     mouse_click(read_button[0], read_button[1])
-    time.sleep(0.5)
     mouse_click(start_button[0],start_button[1])
-    time.sleep(5)
+
  
     start_time = time.time()
     while  win32gui.GetWindowText(hwndChildList[13]) != start_init:
         time.sleep(1)
-        elapsed_time = time.time() - start_time
-        assert elapsed_time < 600 , "timeout!"
+        #elapsed_time = time.time() - start_time
+        #assert elapsed_time < 600 , "timeout!"
     time.sleep(1)
     filename = "HDtune_read.bmp"
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
@@ -477,8 +474,43 @@ def run_performance(disk_number=100, partition_name = "A"):
 
 
 if __name__ == "__main__" :
+    #run_HDtune(disk_number = 2)
+    tool, tool_path= tool_dic["TXB"]
+    run_tool(tool_path)
+    #找到tool 所在的窗口
 
-    get_DiskInfo(2, "ss")
- 
+    hwnd = win32gui.FindWindow(None, tool)
+    #设置窗口为焦点
+    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
+    #run_TxBENCH("G")
+    # # cnt  = win32api.GetLogicalDriveStrings().split(":\\\x00").index("a")
+    # # print(cnt)
+    # #for k in (0, cnt)
+    # #print(a.split(":\\\x00"))
 
+    # #print(win32api.GetLogicalDriveStrings().split(r":\ "))
+    # #print(win32api.GetVolumeInformation(2))
+
+    #     #设置窗口为焦点
+    # tool, tool_path= tool_dic["TXB"]
+    # run_tool(tool_path)
+    # #找到tool 所在的窗口
+
+    # hwnd = win32gui.FindWindow(None, tool)
+    # #print(get_all_child(tool))
+    # #设置窗口为焦点
+    # win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
+    # assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
+    # hwndChildList = get_child_windows(hwnd)
+    # disk_select = button_center(hwndChildList[10])
+
+    # mouse_click(disk_select[0], disk_select[1])
+    # mouse_click(disk_select[0], disk_select[1])
     
+    # cnt  = win32api.GetLogicalDriveStrings().split(":\\\x00").index("G")
+    # print(cnt)
+    # for k in range(0, cnt):
+    #     time.sleep(1)
+        
+    #     keybd_single_char("(")
+        
