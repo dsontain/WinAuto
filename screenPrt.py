@@ -52,6 +52,10 @@ class BITMAPINFOHEADER(ctypes.Structure):
 SIZEOF_BITMAPINFOHEADER = ctypes.sizeof(BITMAPINFOHEADER)
 
 
+
+
+
+
 class ScreenPrintWin(object):
 
     @classmethod
@@ -66,6 +70,7 @@ class ScreenPrintWin(object):
     @classmethod
     def get_clipboard_bitmap(cls):
         ScreenPrintWin().keyboard_2()
+        
         win32clipboard.OpenClipboard()
         win32clipboard.EmptyClipboard()
         win32clipboard.CloseClipboard()
@@ -84,30 +89,6 @@ class ScreenPrintWin(object):
         win32clipboard.CloseClipboard()
         return data
 
-    @classmethod
-    def get_clipboard_bitmap_allscreen(cls):
-        win32api.keybd_event(44,0,0,0)
-        win32api.keybd_event(44,0,win32con.KEYEVENTF_KEYUP,0)
-        
-        time.sleep(2)
-        win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.CloseClipboard()
-        win32api.keybd_event(44,0,0,0)
-        win32api.keybd_event(44,0,win32con.KEYEVENTF_KEYUP,0)
-        time.sleep(0.1)
-        data = 0
-        win32clipboard.OpenClipboard()
-        #win32clipboard.EmptyClipboard()
-        #print(type(win32clipboard.GetClipboardData(win32clipboard.CF_DIB)))
-        #print(win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB))
-        if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB):
-            data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
-        else:
-            data = 0
-            #print('clipboard does not contain an image in DIB format')
-        win32clipboard.CloseClipboard()
-        return data
 
     @classmethod
     def save_bitmap(cls, bmp_filename = 'clipboard.bmp'):
@@ -143,41 +124,7 @@ class ScreenPrintWin(object):
         return 1
 
 
-    @classmethod
-    def save_bitmap_all(cls, bmp_filename = 'clipboard.bmp'):
-        SIZEOF_BITMAPFILEHEADER = ctypes.sizeof(BITMAPFILEHEADER)
-        SIZEOF_BITMAPINFOHEADER = ctypes.sizeof(BITMAPINFOHEADER)
-        
-        #data = ScreenPrintWin().get_clipboard_bitmap()
-
-        for cnt in range(0, 3):
-            time.sleep(1)
-            data = ScreenPrintWin().get_clipboard_bitmap_allscreen()
-            if data:
-                break
-            if cnt == 2:
-                print('Three attempts to capture failed')
-                return 0
-            time.sleep(0.5)
-
-        bmih = BITMAPINFOHEADER()
-        ctypes.memmove(ctypes.pointer(bmih), data, SIZEOF_BITMAPINFOHEADER)
-        assert bmih.biCompression == BI_BITFIELDS, 'insupported compression type {}'.format(bmih.biCompression)
-
-        bmfh = BITMAPFILEHEADER()
-        ctypes.memset(ctypes.pointer(bmfh), 0, SIZEOF_BITMAPFILEHEADER)  # zero structure
-        bmfh.bfType = ord('B') | (ord('M') << 8)
-        bmfh.bfSize = SIZEOF_BITMAPFILEHEADER + len(data)  # file size
-        SIZEOF_COLORTABLE = 0
-        bmfh.bfOffBits = SIZEOF_BITMAPFILEHEADER + SIZEOF_BITMAPINFOHEADER + SIZEOF_COLORTABLE
-        with open(bmp_filename, 'wb') as bmp_file:
-            bmp_file.write(bmfh)
-            bmp_file.write(data)
-        print('file "{}" created from clipboard image'.format(bmp_filename))
-        return 1
-
 
 if __name__=="__main__":
     #ScreenPrintWin().keyboard_2()
-    ScreenPrintWin().save_bitmap_all()
-
+    ScreenPrintWin().save_bitmap()
