@@ -21,9 +21,6 @@ class Benchmark(unittest.TestCase):
         self.disk = 2
         get_DiskInfo(self.disk, "start")
     
-        #a = diskpart_tool.DiskPart()
-        #a.clean(self.target)
-        #a.create_partition_primary(self.disk, self.target)
     
     @classmethod
     def tearDownClass(self):
@@ -36,17 +33,21 @@ class Benchmark(unittest.TestCase):
     @unittest.skip("demonstrating skipping")
     def test_2_CDM(self):
         run_CrystalDiskMark5(self.target)
-    #@unittest.skip("demonstrating skipping")
+    @unittest.skip("demonstrating skipping")
     def test_3_ATTO(self):
         run_ATTO_Disk_Benchmark(self.target)
-    
+    @unittest.skip("demonstrating skipping")
     def test_4_TXbenck(self):
         run_TxBENCH(self.target)
+    @unittest.skip("demonstrating skipping")
     def test_5_Anvil(self):
         run_Anvil(self.target)
+    #@unittest.skip("demonstrating skipping")
     def test_6_HDtune(self):
-        a = diskpart_tool.DiskPart()
-        a.clean(self.disk)
+        diskpart_tool.DiskPart.clean(self.disk)
         run_HDtune(self.disk)
+
+
+
 if __name__ == '__main__':
     unittest.main()#运行所有的测试用例

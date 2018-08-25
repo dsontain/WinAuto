@@ -11,6 +11,13 @@ import threading
 import diskpart_tool
 import screenPrt
 import unittest
+import json
+
+
+# with open("setting.json",'r',encoding='utf-8') as json_file:
+#         #json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
+#         tool_dic = json.load(json_file)
+
 
 
 tool_dic = {
@@ -108,20 +115,29 @@ def button_center(phwnd):
 
 
 
-def run_tool(tool="", wait = 5):
+def run_tool(tool="", tool_path="" , wait = 5):
 
-    cmd = 'start "aa" "{}"'.format(tool)
+    cmd = 'start "aa" "{}"'.format(tool_path)
     os.system(cmd)
     time.sleep(wait)
+
+    for cnt in [ 1 ,1, 0,]:
+        hwnd = win32gui.FindWindow(None, tool)
+        if hwnd:
+            break
+        elif cnt:
+            raise Exception("Open tool failed!")
+        else:
+            time.sleep(10)
+    return hwnd
+
 
 def run_assd(target = "F"):
 
 
     tool, tool_path= tool_dic["ASSD"]
-    run_tool(tool_path)
+    hwnd = run_tool(tool , tool_path)
     #找到tool 所在的窗口
-    hwnd = win32gui.FindWindow(None, tool)
-    #设置assd窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
 
     hwndChildList = get_child_windows(hwnd)
@@ -174,10 +190,7 @@ def run_CrystalDiskMark5(target = "T"):
 
     tool = "CrystalDiskMark 5.1.2 x64"
     tool, tool_path= tool_dic["CDM"]
-    run_tool(tool_path)
-    
-    #找到tool 所在的窗口
-    hwnd = win32gui.FindWindow(None, tool)
+    hwnd = run_tool(tool , tool_path)
     #设置窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
 
@@ -241,10 +254,7 @@ def run_Anvil(target = "T"):
 
     tool = "Anvil's Storage Utilities 1.1.0 (2014-January-1)"
     tool, tool_path= tool_dic["Anvil"]
-    run_tool(tool_path,7)
-    
-    #找到tool 所在的窗口
-    hwnd = win32gui.FindWindow(None, tool)
+    hwnd = run_tool(tool , tool_path)
     #设置窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
@@ -274,8 +284,8 @@ def run_Anvil(target = "T"):
 
  
     #开始测试
-    mouse_click(disk_tmp[0], disk_tmp[1],2)
-    mouse_click(disk_tmp[0], disk_tmp[1],2)
+    mouse_click(disk_tmp[0], disk_tmp[1], 2)
+    mouse_click(disk_tmp[0], disk_tmp[1], 2)
     filename = "{}.bmp".format(tool)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
@@ -292,9 +302,7 @@ def run_ATTO_Disk_Benchmark(target = "T"):
     tool_path = r'start "aa" "D:\SSD performance\ATTO Disk Benchmark\ATTO Disk Benchmark.exe"'
     
     tool, tool_path= tool_dic["ATTO"]
-    run_tool(tool_path)
-    #找到tool 所在的窗口
-    hwnd = win32gui.FindWindow(None, tool)
+    hwnd = run_tool(tool , tool_path)
     #设置窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,0,0,0, win32con.SWP_NOSIZE)
 
@@ -326,11 +334,7 @@ def run_ATTO_Disk_Benchmark(target = "T"):
 def run_TxBENCH(target = "T"):
 
     tool, tool_path= tool_dic["TXB"]
-    run_tool(tool_path)
-    #找到tool 所在的窗口
-
-    hwnd = win32gui.FindWindow(None, tool)
-    #设置窗口为焦点
+    hwnd = run_tool(tool , tool_path)
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
     hwndChildList = get_child_windows(hwnd)
@@ -368,9 +372,8 @@ def run_TxBENCH(target = "T"):
 def get_DiskInfo(target = 0, image = ""):
 
     tool, tool_path= tool_dic["CDI"]
-    run_tool(tool_path)
-    hwnd = win32gui.FindWindow(None, tool)#找到tool 的句柄
-    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0,2000,2000, win32con.SWP_SHOWWINDOW)#设置窗口为焦点
+    hwnd = run_tool(tool , tool_path)
+    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0,2000,800, win32con.SWP_SHOWWINDOW)#设置窗口为焦点
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
     hwndChildList = get_child_windows(hwnd)
 
@@ -388,9 +391,7 @@ def run_HDtune(disk_number=100):
 
 
     tool, tool_path= tool_dic["HDtune"]
-    run_tool(tool_path)
-    
-    hwnd = win32gui.FindWindow(None, tool)
+    hwnd = run_tool(tool , tool_path)
 
     #设置窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,0,0,0, win32con.SWP_NOSIZE)
@@ -448,69 +449,6 @@ def run_HDtune(disk_number=100):
     close_window(tool)
     return filename
 
-def run_performance(disk_number=100, partition_name = "A"):
-    # a = diskpart_tool.DiskPart()
-    # a.clean(disk_number)
-    # a.create_partition_primary(disk_number=disk_number, filesystem="ntfs",partition_name =partition_name)
-    #print(a.scan())
-    time.sleep(2)
-    run_assd(partition_name)
-    time.sleep(2)
-    run_CrystalDiskMark5(partition_name)
-    time.sleep(2)
-    run_ATTO_Disk_Benchmark(partition_name)
-    time.sleep(2)
-    run_TxBENCH(partition_name)
-    time.sleep(2)
-    #run_HDtune(disk_number=disk_number)
-
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__" :
-    #run_HDtune(disk_number = 2)
-    tool, tool_path= tool_dic["TXB"]
-    run_tool(tool_path)
-    #找到tool 所在的窗口
-
-    hwnd = win32gui.FindWindow(None, tool)
-    #设置窗口为焦点
-    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
-    #run_TxBENCH("G")
-    # # cnt  = win32api.GetLogicalDriveStrings().split(":\\\x00").index("a")
-    # # print(cnt)
-    # #for k in (0, cnt)
-    # #print(a.split(":\\\x00"))
-
-    # #print(win32api.GetLogicalDriveStrings().split(r":\ "))
-    # #print(win32api.GetVolumeInformation(2))
-
-    #     #设置窗口为焦点
-    # tool, tool_path= tool_dic["TXB"]
-    # run_tool(tool_path)
-    # #找到tool 所在的窗口
-
-    # hwnd = win32gui.FindWindow(None, tool)
-    # #print(get_all_child(tool))
-    # #设置窗口为焦点
-    # win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
-    # assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
-    # hwndChildList = get_child_windows(hwnd)
-    # disk_select = button_center(hwndChildList[10])
-
-    # mouse_click(disk_select[0], disk_select[1])
-    # mouse_click(disk_select[0], disk_select[1])
-    
-    # cnt  = win32api.GetLogicalDriveStrings().split(":\\\x00").index("G")
-    # print(cnt)
-    # for k in range(0, cnt):
-    #     time.sleep(1)
-        
-    #     keybd_single_char("(")
+    pass
         

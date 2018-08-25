@@ -4,6 +4,7 @@ class DiskPart(object):
     """
 
     """
+    @classmethod
     def scan(self):
         """
         function: List disk
@@ -19,7 +20,7 @@ class DiskPart(object):
         for disk in disk_pool:
             print(disk)
         return disk_pool
-
+    @classmethod
     def list_volume(self):
         """
         function : list all current filesystem
@@ -40,13 +41,8 @@ class DiskPart(object):
 
         return volume_pool
 
-
+    @classmethod
     def list_partition(self, disk_number=100):
-
-
-
-
-
 
         cmd = "select disk %d\n" % disk_number
         cmd += "list partition\n"
@@ -58,8 +54,8 @@ class DiskPart(object):
             print(partition)
 
         return partition_pool
-
-    def create_partition_primary(self, disk_number=1, partition_name = "T", filesystem="ntfs"):
+    @classmethod
+    def create_partition_primary(self, disk_number=100, partition_name = "T", filesystem="ntfs"):
 
         cmd = "select disk %d\n" % disk_number
         cmd += "create partition primary\n"
@@ -68,9 +64,7 @@ class DiskPart(object):
         self.make_diskpart_script(cmd)
 
         print("{} OK....".format("create_partition_primary"))
-
-
-
+    @classmethod
     def make_diskpart_script(self, cfg=""):
         with open("diskpart.cfg", "w") as target:
             target.write(cfg)
@@ -81,7 +75,7 @@ class DiskPart(object):
         ret, output = subprocess.getstatusoutput(cmd)
         assert ret == 0, output
         return output
-
+    @classmethod
     def clean(self, disk_number=100):
         assert disk_number != 0 , "Don't select disk 0"
         cmd = "select disk %d\n" % disk_number
@@ -90,7 +84,7 @@ class DiskPart(object):
 
 
 if __name__ == "__main__":
-    a = DiskPart()
-    # a.clean(1)
-    # a.create_partition_primary(1)
-    print(a.scan())
+    DiskPart.scan()
+    #DiskPart
+    #DiskPart.create_partition_primary(disk_number=2, partition_name = "T", filesystem="ntfs")
+   
