@@ -1,0 +1,30 @@
+{
+    "ASSD": [
+        "AS SSD Benchmark 1.9.5986.35387",
+        "C:\\SSD performance\\AS SSD Benchmark\\AS SSD Benchmark.exe"
+    ],
+    "CDM": [
+        "CrystalDiskMark 5.1.2 x64",
+        "C:\\SSD performance\\CrystalDiskMark5\\DiskMark64.exe"
+    ],
+    "ATTO": [
+        "Untitled - ATTO Disk Benchmark",
+        "C:\\SSD performance\\ATTO Disk Benchmark\\ATTO Disk Benchmark.exe"
+    ],
+    "TXB": [
+        "TxBENCH - New project",
+        "D:\\SSD performance\\TxBENCH.exe"
+    ],
+    "HDtune": [
+        "HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 ",
+        "D:\\SSD performance\\HD Tune Pro.exe"
+    ],
+    "Anvil": [
+        "Anvil's Storage Utilities 1.1.0 (2014-January-1)",
+        "D:\\SSD performance\\Anvil`s Storage Utilities\\AnvilPro.exe"
+    ],
+    "CDI": [
+        "CrystalDiskInfo 7.6.0 ",
+        "C:\\Program Files (x86)\\CrystalDiskInfo\\DiskInfo32.exe"
+    ]
+}
