@@ -91,7 +91,10 @@ class ScreenPrintWin(object):
 
 
     @classmethod
-    def save_bitmap(cls, bmp_filename = 'clipboard.bmp'):
+    def save_bitmap(cls, bmp_filename = 'clipboard'):
+
+
+        bmp_filename = "{}_{}.bmp".format(bmp_filename, int(time.time()))
         SIZEOF_BITMAPFILEHEADER = ctypes.sizeof(BITMAPFILEHEADER)
         SIZEOF_BITMAPINFOHEADER = ctypes.sizeof(BITMAPINFOHEADER)
         

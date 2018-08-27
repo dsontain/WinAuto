@@ -14,22 +14,22 @@ import unittest
 import json
 
 
-# with open("setting.json",'r',encoding='utf-8') as json_file:
-#         #json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
-#         tool_dic = json.load(json_file)
+with open("setting.json",'r',encoding='utf-8') as json_file:
+        #json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
+        tool_dic = json.load(json_file)
 
 
 
-tool_dic = {
-    "ASSD"  : ("AS SSD Benchmark 1.9.5986.35387", r"D:\SSD performance\AS SSD Benchmark\AS SSD Benchmark.exe"),
-    "CDM"   : ("CrystalDiskMark 6.0.1 x64", r"D:\SSD performance\CrystalDiskMark6_0_1\DiskMark64.exe"),
-    #"CDM"   : ("CrystalDiskMark 5.1.2 x64", r"D:\SSD performance\CrystalDiskMark5\DiskMark64.exe"),
-    "ATTO"  : ("Untitled - ATTO Disk Benchmark", r"D:\SSD performance\ATTO Disk Benchmark\ATTO Disk Benchmark.exe"),
-    "TXB"   : ("TxBENCH - New project", r"D:\SSD performance\TxBENCH.exe"),
-    "HDtune": ("HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 ", r"D:\SSD performance\HD Tune Pro.exe"),
-    "Anvil" : ("Anvil's Storage Utilities 1.1.0 (2014-January-1)", r"D:\SSD performance\Anvil`s Storage Utilities\AnvilPro.exe"),
-    "CDI"   : ("CrystalDiskInfo 7.6.0 ", r"C:\Program Files (x86)\CrystalDiskInfo\DiskInfo32.exe")
-}
+# tool_dic = {
+#     "ASSD"  : ("AS SSD Benchmark 1.9.5986.35387", r"D:\SSD performance\AS SSD Benchmark\AS SSD Benchmark.exe"),
+#     "CDM"   : ("CrystalDiskMark 6.0.1 x64", r"D:\SSD performance\CrystalDiskMark6_0_1\DiskMark64.exe"),
+#     #"CDM"   : ("CrystalDiskMark 5.1.2 x64", r"D:\SSD performance\CrystalDiskMark5\DiskMark64.exe"),
+#     "ATTO"  : ("Untitled - ATTO Disk Benchmark", r"D:\SSD performance\ATTO Disk Benchmark\ATTO Disk Benchmark.exe"),
+#     "TXB"   : ("TxBENCH - New project", r"D:\SSD performance\TxBENCH.exe"),
+#     "HDtune": ("HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 ", r"D:\SSD performance\HD Tune Pro.exe"),
+#     "Anvil" : ("Anvil's Storage Utilities 1.1.0 (2014-January-1)", r"D:\SSD performance\Anvil`s Storage Utilities\AnvilPro.exe"),
+#     "CDI"   : ("CrystalDiskInfo 7.6.0 ", r"C:\Program Files (x86)\CrystalDiskInfo\DiskInfo32.exe")
+# }
     
 
 def get_child_windows(parent):
@@ -174,7 +174,7 @@ def run_assd(target = "F"):
         if flag == 10:
             break
 
-    filename = "{}.bmp".format(tool)
+    filename = tool
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
 
@@ -245,7 +245,7 @@ def run_CrystalDiskMark5(target = "T"):
     while win32gui.GetWindowText(hwnd) != tool:
         time.sleep(1)
 
-    filename = "{}.bmp".format(tool)
+    filename = tool
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
 
@@ -286,7 +286,7 @@ def run_Anvil(target = "T"):
     #开始测试
     mouse_click(disk_tmp[0], disk_tmp[1], 2)
     mouse_click(disk_tmp[0], disk_tmp[1], 2)
-    filename = "{}.bmp".format(tool)
+    filename = tool
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     #time.sleep(10)
@@ -324,7 +324,7 @@ def run_ATTO_Disk_Benchmark(target = "T"):
         # elapsed_time = time.time() - start_time
         # assert elapsed_time < 6000 , "timeout!"
 
-    filename = "{}.bmp".format(tool)
+    filename = tool
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     print("run {} finished!".format(tool))
     cmd = r'taskkill /F /IM "ATTO Disk Benchmark.exe"'
@@ -361,7 +361,7 @@ def run_TxBENCH(target = "T"):
         elapsed_time = time.time() - start_time
         assert elapsed_time < 6000 , "timeout!"
 
-    filename = "{}.bmp".format(tool)
+    filename = tool
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
 
     print("run {} finished!".format(tool))
@@ -380,7 +380,7 @@ def get_DiskInfo(target = 0, image = ""):
     target_button = button_center(hwndChildList[2 + target]) #获取所需磁盘的按键
     mouse_click(target_button[0], target_button[1])
 
-    filename = "{}-{}.bmp".format(image,tool)
+    filename = "{}-{}".format(image,tool)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     print("run {} finished!".format(tool))
     close_window(tool)
@@ -429,7 +429,7 @@ def run_HDtune(disk_number=100):
         #elapsed_time = time.time() - start_time
         #assert elapsed_time < 600 , "timeout!"
     time.sleep(2)
-    filename = "HDtune_write.bmp"
+    filename = "HDtune_write"
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
 
 
@@ -444,7 +444,7 @@ def run_HDtune(disk_number=100):
         #elapsed_time = time.time() - start_time
         #assert elapsed_time < 600 , "timeout!"
     time.sleep(1)
-    filename = "HDtune_read.bmp"
+    filename = "HDtune_read"
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
     return filename
