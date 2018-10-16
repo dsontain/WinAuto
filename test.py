@@ -17,29 +17,37 @@ class Benchmark(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        self.target = "G"
-        self.disk = 2
+        with open("run.json",'r',encoding='utf-8') as json_file:
+                #json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
+                run_dic = json.load(json_file)
+        
+        
+        self.target = run_dic["Partition"]
+        self.disk = run_dic["Target"]
+        self.reboot = run_dic["Reboot"]
+        self.cycle = run_dic["Total_Cycle"]
+        
+        Current_Cycle = run_dic["Current_Cycle"]
         get_DiskInfo(self.disk, "start")
-    
     
     @classmethod
     def tearDownClass(self):
         pass
         #get_DiskInfo(self.disk, "end")
 
-    @unittest.skip("demonstrating skipping")
+    #@unittest.skip("demonstrating skipping")
     def test_1_ASSD(self):
         run_assd(self.target)
-    @unittest.skip("demonstrating skipping")
+    #@unittest.skip("demonstrating skipping")
     def test_2_CDM(self):
         run_CrystalDiskMark5(self.target)
-    @unittest.skip("demonstrating skipping")
+    #@unittest.skip("demonstrating skipping")
     def test_3_ATTO(self):
         run_ATTO_Disk_Benchmark(self.target)
-    @unittest.skip("demonstrating skipping")
+    #@unittest.skip("demonstrating skipping")
     def test_4_TXbenck(self):
         run_TxBENCH(self.target)
-    @unittest.skip("demonstrating skipping")
+    #@unittest.skip("demonstrating skipping")
     def test_5_Anvil(self):
         run_Anvil(self.target)
     #@unittest.skip("demonstrating skipping")
@@ -50,4 +58,4 @@ class Benchmark(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()#运行所有的测试用例
+    unittest.main()#运行所有的测试用例`

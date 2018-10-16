@@ -124,6 +124,7 @@ def run_tool(tool="", tool_path="" , wait = 5):
     for cnt in [ 1 ,1, 0,]:
         hwnd = win32gui.FindWindow(None, tool)
         if hwnd:
+            time.sleep(5)
             break
         elif cnt:
             raise Exception("Open tool failed!")
@@ -202,9 +203,9 @@ def run_CrystalDiskMark5(target = "T"):
     disk_select_xy = [x1 + 300, y1 + 25]
     start_xy = [x1 + 50, y1 + 35]
 
-    mouse_click(disk_select_xy[0], disk_select_xy[1])
-    mouse_click(disk_select_xy[0], disk_select_xy[1])
-    keybd_single_char(target)
+    mouse_click(disk_select_xy[0], disk_select_xy[1], idle=2)
+    mouse_click(disk_select_xy[0], disk_select_xy[1], idle=2)
+    keybd_single_char(target, idle= 2)
 
     #开始测试
     mouse_click(start_xy[0], start_xy[1])

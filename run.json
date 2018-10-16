@@ -1,6 +1,6 @@
 {
-    "Partition": "C",
-    "Target": 0,
+    "Partition": "G",
+    "Target": 2,
     "Reboot": 0,
     "Total_Cycle": 10,
     "Current_Cycle": 10
