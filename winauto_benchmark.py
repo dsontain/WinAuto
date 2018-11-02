@@ -187,9 +187,11 @@ def close_window(window="TxBENCH - New project"):
     """
     win32gui.PostMessage(win32gui.FindWindow(0, window), win32con.WM_CLOSE, 0, 0)
 
-def run_CrystalDiskMark5(target = "T"):
+def run_CrystalDiskMark5(target = "T", size="1G"):
 
-    tool = "CrystalDiskMark 5.1.2 x64"
+    
+
+    #tool = "CrystalDiskMark 5.1.2 x64"
     tool, tool_path= tool_dic["CDM"]
     hwnd = run_tool(tool , tool_path)
     #设置窗口为焦点
@@ -202,11 +204,37 @@ def run_CrystalDiskMark5(target = "T"):
 
     disk_select_xy = [x1 + 300, y1 + 25]
     start_xy = [x1 + 50, y1 + 35]
+    size_select_xy =[ x1 + 150, y1 + 25]
 
+
+    #mouse_move(x1 + 300, y1 + 25)
     mouse_click(disk_select_xy[0], disk_select_xy[1], idle=2)
     mouse_click(disk_select_xy[0], disk_select_xy[1], idle=2)
+
     keybd_single_char(target, idle= 2)
 
+    mouse_click(size_select_xy[0], size_select_xy[1], idle=2)
+    mouse_click(size_select_xy[0], size_select_xy[1], idle=2)
+
+    keybd_single_char("3", idle= 1)
+
+    if size == "1G":
+        keybd_single_char("1", idle= 1)
+        keybd_single_char("1", idle= 1)
+    elif size == "2G":
+        keybd_single_char("2", idle= 1)
+    elif size == "4G":
+        keybd_single_char("4", idle= 1)
+    elif size == "8G":
+        keybd_single_char("8", idle= 1)
+    elif size == "16G":
+        keybd_single_char("1", idle= 1)
+        keybd_single_char("1", idle= 1)
+        keybd_single_char("1", idle= 1)
+    elif size == "32G":
+        keybd_single_char("3", idle= 1)
+    else:
+        pass    
     #开始测试
     mouse_click(start_xy[0], start_xy[1])
     if "CrystalDiskMark 5." in tool:

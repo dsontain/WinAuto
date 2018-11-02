@@ -5,7 +5,7 @@ class DiskPart(object):
 
     """
     @classmethod
-    def scan(self):
+    def scan(cls):
         """
         function: List disk
         """
@@ -21,7 +21,7 @@ class DiskPart(object):
             print(disk)
         return disk_pool
     @classmethod
-    def list_volume(self):
+    def list_volume(cls):
         """
         function : list all current filesystem
 
@@ -42,11 +42,11 @@ class DiskPart(object):
         return volume_pool
 
     @classmethod
-    def list_partition(self, disk_number=100):
+    def list_partition(cls, disk_number=100):
 
         cmd = "select disk %d\n" % disk_number
         cmd += "list partition\n"
-        output = self.make_diskpart_script(cmd)
+        output = cls.make_diskpart_script(cmd)
         #print(output)
         partition_pool = output.split("\n")[10:]
 
@@ -55,17 +55,17 @@ class DiskPart(object):
 
         return partition_pool
     @classmethod
-    def create_partition_primary(self, disk_number=100, partition_name = "T", filesystem="ntfs"):
+    def create_partition_primary(cls, disk_number=100, partition_name = "T", filesystem="ntfs"):
 
         cmd = "select disk %d\n" % disk_number
         cmd += "create partition primary\n"
         cmd += "format fs=%s quick label='SSD'\n" % filesystem
         cmd += "assign letter=%s\n" % partition_name
-        self.make_diskpart_script(cmd)
+        cls.make_diskpart_script(cmd)
 
         print("{} OK....".format("create_partition_primary"))
     @classmethod
-    def make_diskpart_script(self, cfg=""):
+    def make_diskpart_script(cls, cfg=""):
         with open("diskpart.cfg", "w") as target:
             target.write(cfg)
 
@@ -76,11 +76,11 @@ class DiskPart(object):
         assert ret == 0, output
         return output
     @classmethod
-    def clean(self, disk_number=100):
+    def clean(cls, disk_number=100):
         assert disk_number != 0 , "Don't select disk 0"
         cmd = "select disk %d\n" % disk_number
         cmd += "clean\n"
-        print(self.make_diskpart_script(cmd))
+        print(cls.make_diskpart_script(cmd))
 
 
 if __name__ == "__main__":
