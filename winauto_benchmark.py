@@ -12,6 +12,7 @@ import diskpart_tool
 import screenPrt
 import unittest
 import json
+import fire
 
 
 with open("setting.json",'r',encoding='utf-8') as json_file:
@@ -115,6 +116,13 @@ def button_center(phwnd):
 
 
 
+def click_handle(phwnd, cnt= 2, keybd_char= ""):
+    x, y = button_center(phwnd)
+    for i in range(0, cnt):
+        mouse_click(x, y)
+    if keybd_char:
+        keybd_single_char(keybd_char)
+
 def run_tool(tool="", tool_path="" , wait = 5):
 
     cmd = 'start "aa" "{}"'.format(tool_path)
@@ -133,7 +141,7 @@ def run_tool(tool="", tool_path="" , wait = 5):
     return hwnd
 
 
-def run_assd(target = "F"):
+def run_assd(target = "F", size = "1G"):
 
 
     tool, tool_path= tool_dic["ASSD"]
@@ -146,21 +154,31 @@ def run_assd(target = "F"):
     #磁盘选择窗口/磁盘名称窗口/开始按键
     disk_select = hwndChildList[10]
     write_aactime = hwndChildList[31]
-    #选择待测试磁盘
-    xy = button_center(disk_select)
-    mouse_click(xy[0], xy[1])
+    size_select = hwndChildList[0]
+    
 
-    keybd_single_char("C")
+    click_handle(disk_select, 2, target)#选择待测试磁盘
+    click_handle(size_select, 2, "3")
 
-    keybd_single_char(target)
-    mouse_click(xy[0], xy[1])
+    if size == "3G":
+        pass
+    elif size == "5G":
+        keybd_single_char("5")
+    elif size == "10G":
+        keybd_single_char("1")
+    elif size == "1G":
+        keybd_single_char("1")
+        keybd_single_char("1")
+    else:
+        pass
 
     # 找到 start按键
     hwnd1= win32gui.FindWindowEx(hwnd, None, None, "Start")
-    xy = button_center(hwnd1)
-    mouse_move(xy[0], xy[1])
-    #开始运行
-    mouse_click(xy[0], xy[1])
+    # xy = button_center(hwnd1)
+    # mouse_move(xy[0], xy[1])
+    # #开始运行
+    # mouse_click(xy[0], xy[1])
+    click_handle(hwnd1, 1)
     while True:
         write_aactime_current = win32gui.GetWindowText(write_aactime)
         flag = 0
@@ -176,8 +194,9 @@ def run_assd(target = "F"):
             break
 
     filename = tool
-    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
+    return filename
 
 def close_window(window="TxBENCH - New project"):
     """关闭窗口
@@ -269,7 +288,6 @@ def run_CrystalDiskMark5(target = "T", size="1G"):
             else:
                 time.sleep(1)
                 break
-        print(status)
 
     while win32gui.GetWindowText(hwnd) != tool:
         time.sleep(1)
@@ -316,7 +334,7 @@ def run_Anvil(target = "T"):
     mouse_click(disk_tmp[0], disk_tmp[1], 2)
     mouse_click(disk_tmp[0], disk_tmp[1], 2)
     filename = tool
-    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    #screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     #time.sleep(10)
     close_window(tool)
@@ -325,7 +343,7 @@ def run_Anvil(target = "T"):
 
 
 
-def run_ATTO_Disk_Benchmark(target = "T"):
+def run_ATTO_Disk_Benchmark(target = "T", mode = 2, dpeth = 4):
 
     tool = "Untitled - ATTO Disk Benchmark"
     tool_path = r'start "aa" "D:\SSD performance\ATTO Disk Benchmark\ATTO Disk Benchmark.exe"'
@@ -337,6 +355,7 @@ def run_ATTO_Disk_Benchmark(target = "T"):
 
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
 
+    mode_hwnd_tag = mode + 10
     hwndChildList = get_child_windows(hwnd)
 
     disk_select = button_center(hwndChildList[2])
@@ -344,16 +363,32 @@ def run_ATTO_Disk_Benchmark(target = "T"):
     mouse_click(disk_select[0], disk_select[1])
     keybd_single_char(target)
 
-    start_button = button_center(hwndChildList[27])
-    mouse_click(start_button[0], start_button[1])
+    mode_select = button_center(hwndChildList[mode_hwnd_tag])
+    mouse_click(mode_select[0], mode_select[1])
 
-    start_time = time.time()
+    pattern_button =  hwndChildList[15]
+    dpeth_button = hwndChildList[18]
+
+    if mode == 1:
+        print(1)
+        click_handle(pattern_button, 2 ,"R")
+    elif mode == 2 :
+        click_handle(dpeth_button, 2, chr(dpeth))
+    elif mode == 3 :
+        print("else")
+    else:
+        print("else")
+
+    start_button = hwndChildList[27]
+    click_handle(start_button, 1, None)
+
+    #start_time = time.time()
     while  win32gui.GetWindowText(hwndChildList[-10]) == "":
         time.sleep(1)
         # elapsed_time = time.time() - start_time
         # assert elapsed_time < 6000 , "timeout!"
 
-    filename = tool
+    filename = tool + str(mode)
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     print("run {} finished!".format(tool))
     cmd = r'taskkill /F /IM "ATTO Disk Benchmark.exe"'
@@ -391,7 +426,7 @@ def run_TxBENCH(target = "T"):
         assert elapsed_time < 6000 , "timeout!"
 
     filename = tool
-    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
 
     print("run {} finished!".format(tool))
     close_window(tool)
@@ -409,8 +444,8 @@ def get_DiskInfo(target = 0, image = ""):
     target_button = button_center(hwndChildList[2 + target]) #获取所需磁盘的按键
     mouse_click(target_button[0], target_button[1])
 
-    filename = "{}-{}".format(image,tool)
-    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    filename = "{}-{}".format(image, tool)
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     print("run {} finished!".format(tool))
     close_window(tool)
     time.sleep(1)
@@ -459,7 +494,7 @@ def run_HDtune(disk_number=100):
         #assert elapsed_time < 600 , "timeout!"
     time.sleep(2)
     filename = "HDtune_write"
-    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
 
 
     time.sleep(4)
@@ -474,10 +509,19 @@ def run_HDtune(disk_number=100):
         #assert elapsed_time < 600 , "timeout!"
     time.sleep(1)
     filename = "HDtune_read"
-    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
     return filename
 
 if __name__ == "__main__" :
-    pass
+    #run_ATTO_Disk_Benchmark(target = "D", mode = 1, dpeth = 4)
+      fire.Fire({
+          'assd': run_assd,
+          'cdm' : run_CrystalDiskMark5,
+          'atto': run_ATTO_Disk_Benchmark,
+          'txb' : run_TxBENCH,
+          'avl' : run_Anvil,
+          'HDtune': run_HDtune
+      }
+      )
         

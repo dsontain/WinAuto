@@ -6,9 +6,9 @@ import sys
 import win32api
 import win32con
 import time
-
+from PIL import Image
 #time.sleep(4)
-
+import os
 
 import win32api  
 import win32con  
@@ -59,22 +59,30 @@ SIZEOF_BITMAPINFOHEADER = ctypes.sizeof(BITMAPINFOHEADER)
 class ScreenPrintWin(object):
 
     @classmethod
-    def keyboard_2(cls, key1=18, key2=44):
+    def keyboard_PrtSc(cls, window=True):
+        key1=18 #alt
+        key2=44 #print
         #win32clipboard.EmptyClipboard()
-        win32api.keybd_event(key1,0,0,0)  #按下第一个按键
+        if window:
+            win32api.keybd_event(key1,0,0,0)  #按下第一个按键
+
         win32api.keybd_event(key2,0,0,0)  #按下第二个按键
-        win32api.keybd_event(key2,0,win32con.KEYEVENTF_KEYUP,0) #释放按键  
-        win32api.keybd_event(key1,0,win32con.KEYEVENTF_KEYUP,0) #释放按键  
+        win32api.keybd_event(key2,0,win32con.KEYEVENTF_KEYUP,0) #释放按键 
+
+        if window:
+            win32api.keybd_event(key1,0,win32con.KEYEVENTF_KEYUP,0) #释放按键  
 
 
     @classmethod
-    def get_clipboard_bitmap(cls):
-        ScreenPrintWin().keyboard_2()
+    def get_clipboard_bitmap(cls, window=True):
+    
+        ScreenPrintWin().keyboard_PrtSc(window)
+        time.sleep(0.1)
         
         win32clipboard.OpenClipboard()
         win32clipboard.EmptyClipboard()
         win32clipboard.CloseClipboard()
-        ScreenPrintWin().keyboard_2()
+        ScreenPrintWin().keyboard_PrtSc(window)
         time.sleep(0.1)
         data = 0
         win32clipboard.OpenClipboard()
@@ -91,18 +99,20 @@ class ScreenPrintWin(object):
 
 
     @classmethod
-    def save_bitmap(cls, bmp_filename = 'clipboard'):
-
-
-        bmp_filename = "{}_{}.bmp".format(bmp_filename, int(time.time()))
+    def save_bitmap(cls, bmp_filename='clipboard', window=True, tag=True):
+        if tag:
+            time_tag = time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(time.time()))
+        else:
+            time_tag = "tag"
+        jpg_filename = "{}_{}.jpg".format(bmp_filename, time_tag)
+        bmp_filename = "{}_{}.bmp".format(bmp_filename, time_tag)
+        
         SIZEOF_BITMAPFILEHEADER = ctypes.sizeof(BITMAPFILEHEADER)
         SIZEOF_BITMAPINFOHEADER = ctypes.sizeof(BITMAPINFOHEADER)
         
-        #data = ScreenPrintWin().get_clipboard_bitmap()
-
         for cnt in range(0, 3):
             time.sleep(1)
-            data = ScreenPrintWin().get_clipboard_bitmap()
+            data = ScreenPrintWin().get_clipboard_bitmap(window)
             if data:
                 break
             if cnt == 2:
@@ -123,11 +133,18 @@ class ScreenPrintWin(object):
         with open(bmp_filename, 'wb') as bmp_file:
             bmp_file.write(bmfh)
             bmp_file.write(data)
-        print('file "{}" created from clipboard image'.format(bmp_filename))
-        return 1
+
+        im = Image.open(bmp_filename)
+        im.save(jpg_filename)
+        if os.path.exists(jpg_filename): 
+            os.remove(bmp_filename)
+            print('file "{}" created from clipboard image'.format(jpg_filename))
+            return jpg_filename
+        else:
+            return bmp_filename
 
 
 
 if __name__=="__main__":
-    #ScreenPrintWin().keyboard_2()
+    #ScreenPrintWin().keyboard_PrtSc()
     ScreenPrintWin().save_bitmap()
