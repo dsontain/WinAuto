@@ -2,7 +2,8 @@ import unittest
 import time
 from winauto_benchmark import *
 import sys
-import diskpart_tool
+#import diskpart_tool
+import diskpart_new
 
 class Benchmark(unittest.TestCase):
 
@@ -22,7 +23,12 @@ class Benchmark(unittest.TestCase):
                 run_dic = json.load(json_file)  
         self.target = run_dic["Partition"]
         self.disk = run_dic["Target"]
-        diskpart_tool.DiskPart.create_partition_primary(disk_number=self.disk, partition_name = self.target)
+        run_path = os.path.join(os.getcwd(), "win_bench",time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(time.time())))
+        os.mkdir(run_path)
+        os.chdir(run_path)
+        a = diskpart_new.Diskpart()
+        a.select_disk(self.disk)
+        a.create_partition_primary(self.disk, self.target)
         get_DiskInfo(self.disk, "start")
     
     @classmethod
@@ -47,7 +53,8 @@ class Benchmark(unittest.TestCase):
         run_Anvil(self.target)
     #@unittest.skip("demonstrating skipping")
     def test_6_HDtune(self):
-        diskpart_tool.DiskPart.clean(self.disk)
+        a = diskpart_new.Diskpart()
+        a.clean(self.disk)
         run_HDtune(self.disk)
 
 

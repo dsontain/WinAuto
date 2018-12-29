@@ -189,7 +189,7 @@ def run_assd(target = "F", size = "1G"):
                     break
                 else:
                     flag = flag + 1
-                    time.sleep(1)
+                time.sleep(1)
         if flag == 10:
             break
 
@@ -335,10 +335,10 @@ def run_Anvil(target = "T"):
     mouse_click(disk_tmp[0], disk_tmp[1], 2)
     filename = tool
     #screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
-    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     #time.sleep(10)
     close_window(tool)
-
+    return filename
 
 
 
@@ -389,11 +389,11 @@ def run_ATTO_Disk_Benchmark(target = "T", mode = 2, dpeth = 4):
         # assert elapsed_time < 6000 , "timeout!"
 
     filename = tool + str(mode)
-    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
-    print("run {} finished!".format(tool))
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    #print("run {} finished!".format(tool))
     cmd = r'taskkill /F /IM "ATTO Disk Benchmark.exe"'
     os.system(cmd)
-
+    return filename
 
 def run_TxBENCH(target = "T"):
 
@@ -430,6 +430,7 @@ def run_TxBENCH(target = "T"):
 
     print("run {} finished!".format(tool))
     close_window(tool)
+    return filename
 
 
 
@@ -446,7 +447,7 @@ def get_DiskInfo(target = 0, image = ""):
 
     filename = "{}-{}".format(image, tool)
     filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
-    print("run {} finished!".format(tool))
+    #print("run {} finished!".format(tool))
     close_window(tool)
     time.sleep(1)
     return filename
@@ -494,7 +495,7 @@ def run_HDtune(disk_number=100):
         #assert elapsed_time < 600 , "timeout!"
     time.sleep(2)
     filename = "HDtune_write"
-    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    output_w = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
 
 
     time.sleep(4)
@@ -509,19 +510,18 @@ def run_HDtune(disk_number=100):
         #assert elapsed_time < 600 , "timeout!"
     time.sleep(1)
     filename = "HDtune_read"
-    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    output_r = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
-    return filename
+    return output_w, output_r
 
 if __name__ == "__main__" :
-    #run_ATTO_Disk_Benchmark(target = "D", mode = 1, dpeth = 4)
-      fire.Fire({
+    run_ATTO_Disk_Benchmark(target = "D", mode = 1, dpeth = 4)
+    fire.Fire({
           'assd': run_assd,
           'cdm' : run_CrystalDiskMark5,
           'atto': run_ATTO_Disk_Benchmark,
           'txb' : run_TxBENCH,
           'avl' : run_Anvil,
           'HDtune': run_HDtune
-      }
-      )
-        
+    }
+    )

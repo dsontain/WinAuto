@@ -104,7 +104,7 @@ class ScreenPrintWin(object):
             time_tag = time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(time.time()))
         else:
             time_tag = "tag"
-        jpg_filename = "{}_{}.jpg".format(bmp_filename, time_tag)
+        png_filename = "{}_{}.png".format(bmp_filename, time_tag)
         bmp_filename = "{}_{}.bmp".format(bmp_filename, time_tag)
         
         SIZEOF_BITMAPFILEHEADER = ctypes.sizeof(BITMAPFILEHEADER)
@@ -135,11 +135,11 @@ class ScreenPrintWin(object):
             bmp_file.write(data)
 
         im = Image.open(bmp_filename)
-        im.save(jpg_filename)
-        if os.path.exists(jpg_filename): 
+        im.save(png_filename, "PNG")
+        if os.path.exists(png_filename): 
             os.remove(bmp_filename)
-            print('file "{}" created from clipboard image'.format(jpg_filename))
-            return jpg_filename
+            print('file "{}" created from clipboard image'.format(png_filename))
+            return png_filename
         else:
             return bmp_filename
 
