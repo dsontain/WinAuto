@@ -3,7 +3,7 @@ import zipfile
 import os
 import time
 import fire
-
+import sys
 
 def modify_report(start=None, step=None, template=r'template.docx'):
 
@@ -16,8 +16,7 @@ def modify_report(start=None, step=None, template=r'template.docx'):
         pass
     else:
 
-        start = int(input("start:"))
-        step = int(input("step:"))
+        return False
 
     images = []
     for n in range(start, 100, step):
@@ -61,7 +60,7 @@ def modify_report(start=None, step=None, template=r'template.docx'):
 
     output = shutil.make_archive(time_tag, 'zip', tmp_path)
 
-    modify_file_postfix(output, "docx")
+    return modify_file_postfix(output, "docx")
 
 def modify_file_postfix(src="1.txt", dst=None):
 
@@ -75,7 +74,28 @@ def modify_file_postfix(src="1.txt", dst=None):
 
 
 if __name__=="__main__":
-    modify_report()
+
+    while True:
+
+        start = int(input("start:"))
+        step = int(input("step:"))
+        if start in [1,2,3] and step in [1,2,3]:
+            break
+        else:
+            print("start and step must be 1/2/3")
+
+
+    if 1 == step:
+        template = r'template-1.docx'
+    elif 2 == step:
+        template= r'template-2.docx'
+    elif 3 == step:
+        template= r'template-3.docx'
+    else:
+       pass
+    output = modify_report(start=start, step=step, template=template)
+    print("your report : {}".format(output))
+    time.sleep(5)
 
 
 #shutil.unpack_archive(r'C:\Users\zc\OneDrive\github\WinAuto\report\model.zip', r'C:\Users\zc\OneDrive\github\WinAuto\report')

@@ -143,6 +143,29 @@ class ScreenPrintWin(object):
         else:
             return bmp_filename
 
+def image_joint(out="", *images):
+
+
+    ims =[]
+    for k in images:
+        ims.append(Image.open(k))
+
+
+    im_weight = 0
+    im_height = 0
+    for w in ims:
+        im_weight += w.size[0] + 10
+        if im_height < w.size[1]: im_height = w.size[1]
+    im =  Image.new("RGB",(im_weight, im_height),"#FFFFFF")
+    
+    im_weight_crt = 0
+    for w in ims:
+        im.paste(w,(im_weight_crt,int((im_height - w.size[1])/2)))
+        im_weight_crt += w.size[0] + 10
+    im.save(out)
+    return out
+
+
 
 
 if __name__=="__main__":

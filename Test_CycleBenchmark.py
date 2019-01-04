@@ -4,6 +4,7 @@ from winauto_benchmark import *
 #from WinAuto.winauto_benchmark import *
 import sys
 import diskpart_tool
+from screenPrt import image_joint
 
 class Benchmark(unittest.TestCase):
 
@@ -29,9 +30,10 @@ class Benchmark(unittest.TestCase):
         self.disk = run_dic["Target"]
         self.reboot = run_dic["Reboot"]
         self.cycle = run_dic["Total_Cycle"]
+        self.images = []
         
         Current_Cycle = run_dic["Current_Cycle"]
-
+        self.outname = "cycle_{}.png".format(Current_Cycle)
         if Current_Cycle < self.cycle:
             print("The {} cycle test begin".format(Current_Cycle))
             run_dic["Current_Cycle"] += 1
@@ -44,24 +46,25 @@ class Benchmark(unittest.TestCase):
             while 1:
                 time.sleep(100)
 
-
-
-
     @classmethod
     def tearDownClass(self):
+        image_joint(self.outname, *self.images)
         if self.reboot :
             os.system("shutdown -r -t 5")
         #get_DiskInfo(self.disk, "end")
 
     #@unittest.skip("demonstrating skipping")
     def test_1_ASSD(self):
-        run_assd(self.target)
+        im = run_assd(self.target)
+        self.images.append(im)
     #@unittest.skip("demonstrating skipping")
     def test_2_CDM(self):
-        run_CrystalDiskMark5(self.target)
+        im = run_CrystalDiskMark5(self.target)
+        self.images.append(im)
     #@unittest.skip("demonstrating skipping")
     def test_3_ATTO(self):
-        run_ATTO_Disk_Benchmark(self.target)
+        im = run_ATTO_Disk_Benchmark(self.target)
+        self.images.append(im)
     @unittest.skip("demonstrating skipping")
     def test_4_TXbenck(self):
         run_TxBENCH(self.target)
@@ -72,10 +75,6 @@ class Benchmark(unittest.TestCase):
     def test_6_HDtune(self):
         diskpart_tool.DiskPart.clean(self.disk)
         run_HDtune(self.disk)
-
-
-
-
 
 
 if __name__ == '__main__':

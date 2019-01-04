@@ -179,20 +179,11 @@ def run_assd(target = "F", size = "1G"):
     # #开始运行
     # mouse_click(xy[0], xy[1])
     click_handle(hwnd1, 1)
-    while True:
-        write_aactime_current = win32gui.GetWindowText(write_aactime)
-        flag = 0
-        #判断当前是否Acc time write 是否 为0
-        if write_aactime_current != "0.000 ms" :
-            for cnt in range(0, 10):
-                if write_aactime_current != win32gui.GetWindowText(write_aactime):    
-                    break
-                else:
-                    flag = flag + 1
-                time.sleep(1)
-        if flag == 10:
-            break
 
+    score = hwndChildList[6]
+    while win32gui.GetWindowText(score) == r"----" or win32gui.GetWindowText(write_aactime) == r"0.000 ms" or win32gui.GetWindowText(write_aactime) == r"-.-- ms":
+        time.sleep(5)
+  
     filename = tool
     filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
@@ -293,9 +284,9 @@ def run_CrystalDiskMark5(target = "T", size="1G"):
         time.sleep(1)
 
     filename = tool
-    screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
     close_window(tool)
-
+    return filename
 
 def run_Anvil(target = "T"):
 
@@ -515,7 +506,8 @@ def run_HDtune(disk_number=100):
     return output_w, output_r
 
 if __name__ == "__main__" :
-    run_ATTO_Disk_Benchmark(target = "D", mode = 1, dpeth = 4)
+    #print(get_all_child("AS SSD Benchmark 2.0.6694.23026"))
+    run_assd("H")
     fire.Fire({
           'assd': run_assd,
           'cdm' : run_CrystalDiskMark5,
