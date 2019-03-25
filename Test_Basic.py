@@ -4,6 +4,9 @@ from winauto_benchmark import *
 import sys
 #import diskpart_tool
 import diskpart_new
+import logging
+
+
 
 class Benchmark(unittest.TestCase):
 
@@ -23,17 +26,28 @@ class Benchmark(unittest.TestCase):
                 run_dic = json.load(json_file)  
         self.target = run_dic["Partition"]
         self.disk = run_dic["Target"]
-        run_path = os.path.join(os.getcwd(), "win_bench",time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(time.time())))
+        run_path = os.path.join(os.getcwd(),time.strftime('win_bench_%Y-%m-%d-%H-%M-%S',time.localtime(time.time())))
         os.mkdir(run_path)
         os.chdir(run_path)
         a = diskpart_new.Diskpart()
         a.select_disk(self.disk)
         a.create_partition_primary(self.disk, self.target)
+        a.quit_diskpart()
+        
+        
         get_DiskInfo(self.disk, "start")
     
     @classmethod
     def tearDownClass(self):
-        pass
+        a = diskpart_new.Diskpart()
+        a.select_disk(self.disk)
+        a.create_partition_primary(self.disk, self.target)
+        a.quit_diskpart()
+        cmd = 'start "aa" "{}"'.format("C:\Program Files\Futuremark\PCMark 7\bin\PCMark7.exe")
+        os.system(cmd)
+        time.sleep(5)
+        cmd = 'start "aa" "{}"'.format("C:\Program Files\Futuremark\PCMark 8\bin\PCMark8.exe")
+        os.system(cmd)
         #get_DiskInfo(self.disk, "end")
 
     #@unittest.skip("demonstrating skipping")
@@ -55,6 +69,7 @@ class Benchmark(unittest.TestCase):
     def test_6_HDtune(self):
         a = diskpart_new.Diskpart()
         a.clean(self.disk)
+        a.quit_diskpart()
         run_HDtune(self.disk)
 
 
@@ -74,3 +89,6 @@ if __name__ == '__main__':
         
     else:
         unittest.main()#运行所有的测试用例`
+        
+
+            

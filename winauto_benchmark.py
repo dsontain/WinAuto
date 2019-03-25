@@ -13,12 +13,13 @@ import screenPrt
 import unittest
 import json
 import fire
-
+import logging
 
 with open("setting.json",'r',encoding='utf-8') as json_file:
         #json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
         tool_dic = json.load(json_file)
 
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
 # tool_dic = {
@@ -135,9 +136,12 @@ def run_tool(tool="", tool_path="" , wait = 5):
             time.sleep(5)
             break
         elif cnt:
-            raise Exception("Open tool failed!")
+            logging.warning("Open tool failed {} : {}".format(tool_path, hwnd))
+            return False
+            #raise Exception("Open tool failed!")
         else:
             time.sleep(10)
+    logging.info("run {} : {}".format(tool_path, hwnd))
     return hwnd
 
 
@@ -146,6 +150,9 @@ def run_assd(target = "F", size = "1G"):
 
     tool, tool_path= tool_dic["ASSD"]
     hwnd = run_tool(tool , tool_path)
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False
     #找到tool 所在的窗口
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
 
@@ -204,6 +211,9 @@ def run_CrystalDiskMark5(target = "T", size="1G"):
     #tool = "CrystalDiskMark 5.1.2 x64"
     tool, tool_path= tool_dic["CDM"]
     hwnd = run_tool(tool , tool_path)
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False    
     #设置窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
 
@@ -293,7 +303,9 @@ def run_Anvil(target = "T"):
     tool = "Anvil's Storage Utilities 1.1.0 (2014-January-1)"
     tool, tool_path= tool_dic["Anvil"]
     hwnd = run_tool(tool , tool_path)
-    #设置窗口为焦点
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False    #设置窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
     hwndChildList = get_child_windows(hwnd)
@@ -341,7 +353,9 @@ def run_ATTO_Disk_Benchmark(target = "T", mode = 2, dpeth = 4):
     
     tool, tool_path= tool_dic["ATTO"]
     hwnd = run_tool(tool , tool_path)
-    #设置窗口为焦点
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False    #设置窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,0,0,0, win32con.SWP_NOSIZE)
 
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
@@ -390,6 +404,9 @@ def run_TxBENCH(target = "T"):
 
     tool, tool_path= tool_dic["TXB"]
     hwnd = run_tool(tool , tool_path)
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,140,0,0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
     hwndChildList = get_child_windows(hwnd)
@@ -429,6 +446,9 @@ def get_DiskInfo(target = 0, image = ""):
 
     tool, tool_path= tool_dic["CDI"]
     hwnd = run_tool(tool , tool_path)
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0,2000,800, win32con.SWP_SHOWWINDOW)#设置窗口为焦点
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
     hwndChildList = get_child_windows(hwnd)
@@ -448,6 +468,9 @@ def run_HDtune(disk_number=100):
 
     tool, tool_path= tool_dic["HDtune"]
     hwnd = run_tool(tool , tool_path)
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False
 
     #设置窗口为焦点
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383,0,0,0, win32con.SWP_NOSIZE)

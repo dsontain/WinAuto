@@ -7,7 +7,8 @@ import win32api
 import win32con
 import time
 from PIL import Image
-#time.sleep(4)
+from PIL import ImageDraw
+from PIL import ImageFont
 import os
 
 import win32api  
@@ -138,7 +139,7 @@ class ScreenPrintWin(object):
         im.save(png_filename, "PNG")
         if os.path.exists(png_filename): 
             os.remove(bmp_filename)
-            print('file "{}" created from clipboard image'.format(png_filename))
+            #print('file "{}" created from clipboard image'.format(png_filename))
             return png_filename
         else:
             return bmp_filename
@@ -165,6 +166,27 @@ def image_joint(out="", *images):
     im.save(out)
     return out
 
+
+def image_add_label(text="", imagefile="", output="", 
+                    position=(0,0), rgb=(255, 0, 0), size=24, 
+                    font=r"C:\Windows\Fonts\simhei.ttf"):
+
+
+    font = ImageFont.truetype(font, size)
+
+    im1 = Image.open(imagefile)
+
+    draw = ImageDraw.Draw(im1)
+    draw.text(position, text, rgb, font=font)    #设置文字位置/内容/颜色/字体
+    draw = ImageDraw.Draw(im1)                          #Just draw it!
+
+    #另存图片
+    if output:
+        im1.save(output)
+    else:
+        im1.save(imagefile)
+
+    return output
 
 
 

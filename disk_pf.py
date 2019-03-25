@@ -1,15 +1,15 @@
 
 import win32com.client as client
-
+import wmi
 import time
 import copy
-
+c = wmi.WMI()
 com = client.Dispatch("WbemScripting.SWbemRefresher")
 obj = client.GetObject("winmgmts:\\root\cimv2")
 diskitems = com.AddEnum(obj, "Win32_PerfFormattedData_PerfDisk_LogicalDisk").objectSet
     #time.sleep(1)
 
-diskitems = com.AddEnum(obj, "Win32_PerfRawData_PerfDisk_PhysicalDisk").objectSet
+#diskitems = com.AddEnum(obj, "Win32_PerfRawData_PerfDisk_PhysicalDisk").objectSet
 
 
 
@@ -26,7 +26,7 @@ start = diskitems[0].DiskReadsPerSec
 
 
 
-class DiskAttribuce(obj):
+class DiskAttribuce(object):
     def __init__(self, disk):
         self.CurrentDiskQueueLength = disk.CurrentDiskQueueLength
         self.DiskBytesPerSec = disk.CurrentDiskQueueLength

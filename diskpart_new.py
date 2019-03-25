@@ -122,6 +122,8 @@ class Diskpart(object):
             return True
         else:
             return False
+    def quit_diskpart(self):
+        self.op.process.communicate(b"exit")
 
    
 if __name__ == "__main__":

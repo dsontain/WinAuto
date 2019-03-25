@@ -4,18 +4,25 @@ import os
 import time
 import fire
 import sys
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 
-def modify_report(start=None, step=None, template=r'template.docx'):
+def modify_report(start=None, step=None, output="" ,template=r'template.docx'):
 
 
     cwd = os.getcwd()
-    time_tag = time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(time.time()))
+    time_tag = time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))
+    if output:
+        time_tag = output + "_" + time_tag 
+    
+
     tmp_path = "{}\\{}".format(cwd, time_tag)
+    
 
     if start and step:
         pass
     else:
-
         return False
 
     images = []
@@ -37,24 +44,34 @@ def modify_report(start=None, step=None, template=r'template.docx'):
     for k in os.listdir():
         if "AS SSD Benchmark" in k:
             shutil.copyfile(k, images[1])
+            image_add_label(text=time_tag, imagefile=images[1])
         elif "CrystalDiskMark" in k:
             shutil.copyfile(k, images[2])
+            image_add_label(text=time_tag, imagefile=images[2])
         elif "Untitled" in k:
             shutil.copyfile(k, images[3])
+            image_add_label(text=time_tag, imagefile=images[3])
         elif "TxBENCH" in k:
             shutil.copyfile(k, images[4])
+            image_add_label(text=time_tag, imagefile=images[4])
         elif "Anvil" in k:
             shutil.copyfile(k, images[5])
+            image_add_label(text=time_tag, imagefile=images[5])
         elif "CrystalDiskInfo" in k:
             shutil.copyfile(k, images[0])
+            image_add_label(text=time_tag, imagefile=images[0])
         elif "HDtune_read" in k:
             shutil.copyfile(k, images[6])
+            image_add_label(text=time_tag, imagefile=images[6])
         elif "HDtune_write" in k:
             shutil.copyfile(k, images[7])
+            image_add_label(text=time_tag, imagefile=images[7])
         elif "PCmark7" in k:
             shutil.copyfile(k, images[8])
+            image_add_label(text=time_tag, imagefile=images[8])
         elif "PCmark8" in k:
             shutil.copyfile(k, images[9])
+            image_add_label(text=time_tag, imagefile=images[9])
         else:
             pass
 
@@ -70,6 +87,26 @@ def modify_file_postfix(src="1.txt", dst=None):
 
     return dst
 
+def image_add_label(text="", imagefile="", output="", 
+                    position=(0,0), rgb=(255, 0, 0), size=10, 
+                    font=r"C:\Windows\Fonts\simhei.ttf"):
+
+
+    font = ImageFont.truetype(font, size)
+
+    im1 = Image.open(imagefile)
+
+    draw = ImageDraw.Draw(im1)
+    draw.text(position, text, rgb, font=font)    #设置文字位置/内容/颜色/字体
+    draw = ImageDraw.Draw(im1)                          #Just draw it!
+
+    #另存图片
+    if output:
+        im1.save(output)
+    else:
+        im1.save(imagefile)
+
+    return output
 
 
 
@@ -93,7 +130,8 @@ if __name__=="__main__":
         template= r'template-3.docx'
     else:
        pass
-    output = modify_report(start=start, step=step, template=template)
+
+    output = modify_report(start=start, step=step, output=input("your report name:"), template=template)
     print("your report : {}".format(output))
     time.sleep(5)
 
