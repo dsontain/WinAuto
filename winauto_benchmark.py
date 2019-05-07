@@ -14,7 +14,6 @@ import unittest
 import json
 import fire
 import logging
-
 with open("setting.json",'r',encoding='utf-8') as json_file:
         #json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
         tool_dic = json.load(json_file)
@@ -57,12 +56,24 @@ def get_all_child(tool="Untitled - ATTO Disk Benchmark"):
     #tool = "Untitled - ATTO Disk Benchmark"
     hwnd = win32gui.FindWindow(None, tool)
     hwndChildList = get_child_windows(hwnd)
+    score_result = {
+        "Seq": (win32gui.GetWindowText(hwndChildList[18]), win32gui.GetWindowText(hwndChildList[22])),
+        "4K" : (win32gui.GetWindowText(hwndChildList[19]), win32gui.GetWindowText(hwndChildList[17])),
+        "4K-64Thrd" : (win32gui.GetWindowText(hwndChildList[23]), win32gui.GetWindowText(hwndChildList[21])),
+        "Acc.time" : (win32gui.GetWindowText(hwndChildList[30]), win32gui.GetWindowText(hwndChildList[31])),
+        "score_r_w" : (win32gui.GetWindowText(hwndChildList[5]), win32gui.GetWindowText(hwndChildList[7])),
+        "Score" : win32gui.GetWindowText(hwndChildList[6])
+    }
+    L =[(win32gui.GetWindowText(hwndChildList[x])).split()[0] for x in [18, 22, 19 ,17, 23, 21, 30, 31, 5, 7, 6]]
+    print(L)
     print(hwndChildList)
+    print(win32gui.GetWindowRect(hwnd))
     a = ""
     for k in hwndChildList:
-        b = "{}---{}---{}---{}---{}".format(hwndChildList.index(k),k,win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k))
+        b = "[{}]---[{}]---[{}]---[{}]---[{}]".format(hwndChildList.index(k),k,win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k))
         #print("{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k)))
         a = a  + b + "\n"
+    print(score_result)
     return a
 
 
@@ -162,7 +173,16 @@ def run_assd(target = "F", size = "1G"):
     disk_select = hwndChildList[10]
     write_aactime = hwndChildList[31]
     size_select = hwndChildList[0]
-    
+
+    score_result = {
+        "Seq": (win32gui.GetWindowText(hwndChildList[18]), win32gui.GetWindowText(hwndChildList[22])),
+        "4K" : (win32gui.GetWindowText(hwndChildList[19]), win32gui.GetWindowText(hwndChildList[17])),
+        "4K-64Thrd" : (win32gui.GetWindowText(hwndChildList[23]), win32gui.GetWindowText(hwndChildList[21])),
+        "Acc.time" : (win32gui.GetWindowText(hwndChildList[30]), win32gui.GetWindowText(hwndChildList[31])),
+        "score_r_w" : (win32gui.GetWindowText(hwndChildList[5]), win32gui.GetWindowText(hwndChildList[7])),
+        "Score" : win32gui.GetWindowText(hwndChildList[6])
+
+    }
 
     click_handle(disk_select, 2, target)#选择待测试磁盘
     click_handle(size_select, 2, "3")
@@ -530,13 +550,14 @@ def run_HDtune(disk_number=100):
 
 if __name__ == "__main__" :
     #print(get_all_child("AS SSD Benchmark 2.0.6694.23026"))
-    run_assd("H")
-    fire.Fire({
-          'assd': run_assd,
-          'cdm' : run_CrystalDiskMark5,
-          'atto': run_ATTO_Disk_Benchmark,
-          'txb' : run_TxBENCH,
-          'avl' : run_Anvil,
-          'HDtune': run_HDtune
-    }
-    )
+    print(win32api.GetLogicalDriveStrings())
+    # run_assd("H")
+    # fire.Fire({
+    #       'assd': run_assd,
+    #       'cdm' : run_CrystalDiskMark5,
+    #       'atto': run_ATTO_Disk_Benchmark,
+    #       'txb' : run_TxBENCH,
+    #       'avl' : run_Anvil,
+    #       'HDtune': run_HDtune
+    # }
+    # )
