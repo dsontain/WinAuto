@@ -100,13 +100,13 @@ class ScreenPrintWin(object):
 
 
     @classmethod
-    def save_bitmap(cls, bmp_filename='clipboard', window=True, tag=True):
+    def save_bitmap(cls, bmp_filename='clipboard', window=True, tag=False):
         if tag:
-            time_tag = time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(time.time()))
+            time_tag = time.strftime('_%Y-%m-%d-%H-%M-%S',time.localtime(time.time()))
         else:
-            time_tag = "tag"
-        png_filename = "{}_{}.png".format(bmp_filename, time_tag)
-        bmp_filename = "{}_{}.bmp".format(bmp_filename, time_tag)
+            time_tag = ""
+        png_filename = "{}{}.png".format(bmp_filename, time_tag)
+        bmp_filename = "{}{}.bmp".format(bmp_filename, time_tag)
         
         SIZEOF_BITMAPFILEHEADER = ctypes.sizeof(BITMAPFILEHEADER)
         SIZEOF_BITMAPINFOHEADER = ctypes.sizeof(BITMAPINFOHEADER)
