@@ -18,7 +18,7 @@ with open("setting.json",'r',encoding='utf-8') as json_file:
         #json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
         tool_dic = json.load(json_file)
 
-logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - [%(levelname)s] - %(message)s')
 
 
 # tool_dic = {
@@ -432,7 +432,7 @@ def run_TxBENCH(target = "T"):
     hwndChildList = get_child_windows(hwnd)
     start_button = button_center(hwndChildList[13])
 
-    cnt  = win32api.GetLogicalDriveStrings().split(":\\\x00").index("G")
+    cnt  = win32api.GetLogicalDriveStrings().split(":\\\x00").index(target)
     disk_select = button_center(hwndChildList[10])
 
     mouse_click(disk_select[0], disk_select[1])
@@ -476,8 +476,9 @@ def get_DiskInfo(target = 0, image = ""):
     target_button = button_center(hwndChildList[2 + target]) #获取所需磁盘的按键
     mouse_click(target_button[0], target_button[1])
 
-    filename = "{}-{}".format(image, tool)
-    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    #filename = "{}-{}".format(image, tool)
+
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=tool)
     #print("run {} finished!".format(tool))
     close_window(tool)
     time.sleep(1)
