@@ -8,31 +8,15 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-def modify_report(start=None, step=None, output="" ,template=r'template.docx'):
+def modify_report(start=None,  output="", template=r'template.docx', path=None):
 
-
-    cwd = os.getcwd()
+    if not path:
+        path = os.getcwd()
     time_tag = time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))
     if output:
-        time_tag = output + "_" + time_tag 
-    
+        time_tag = output# + "_" + time_tag
+    tmp_path = "{}\\{}".format(path, time_tag)
 
-    tmp_path = "{}\\{}".format(cwd, time_tag)
-    
-
-    if start and step:
-        pass
-    else:
-        return False
-
-    images = []
-    for n in range(start, 100, step):
-        filename = "{}\\word\\media\\image{}.png".format(tmp_path, n)
-        images.append(filename)
-        if len(images) > 20:
-            break
-
-    
     if not template.endswith("zip"):
 
         template = modify_file_postfix(template, "zip")
@@ -41,39 +25,47 @@ def modify_report(start=None, step=None, output="" ,template=r'template.docx'):
     else:
         shutil.unpack_archive(template, time_tag)
 
-    for k in os.listdir():
-        if "AS SSD Benchmark" in k:
-            shutil.copyfile(k, images[1])
-            image_add_label(text=time_tag, imagefile=images[1])
-        elif "CrystalDiskMark" in k:
-            shutil.copyfile(k, images[2])
-            image_add_label(text=time_tag, imagefile=images[2])
-        elif "Untitled" in k:
-            shutil.copyfile(k, images[3])
-            image_add_label(text=time_tag, imagefile=images[3])
-        elif "TxBENCH" in k:
-            shutil.copyfile(k, images[4])
-            image_add_label(text=time_tag, imagefile=images[4])
-        elif "Anvil" in k:
-            shutil.copyfile(k, images[5])
-            image_add_label(text=time_tag, imagefile=images[5])
-        elif "CrystalDiskInfo" in k:
-            shutil.copyfile(k, images[0])
-            image_add_label(text=time_tag, imagefile=images[0])
-        elif "HDtune_read" in k:
-            shutil.copyfile(k, images[6])
-            image_add_label(text=time_tag, imagefile=images[6])
-        elif "HDtune_write" in k:
-            shutil.copyfile(k, images[7])
-            image_add_label(text=time_tag, imagefile=images[7])
-        elif "PCmark7" in k:
-            shutil.copyfile(k, images[8])
-            image_add_label(text=time_tag, imagefile=images[8])
-        elif "PCmark8" in k:
-            shutil.copyfile(k, images[9])
-            image_add_label(text=time_tag, imagefile=images[9])
-        else:
-            pass
+    images = []
+    for n in range(len(os.listdir("{}\\word\\media".format(tmp_path)))):
+        filename = "{}\\word\\media\\image{}.png".format(tmp_path, n+1)
+        images.append(filename)
+
+    original_images = ["CrystalDiskInfo",
+                       "AS SSD Benchmark",
+                       "Untitled",
+                       "TxBENCH",
+                       "Anvil",
+                       "HDtune_read_before",
+                       "HDtune_write"
+                       "HDtune_read"
+                       "PCmark7"
+                       "PCmark8"
+                       ]
+
+    original_images =[
+        'CrystalDiskInfo 7.6.0.png',
+        'AS SSD Benchmark 2.0.6694.23026.png',
+        'CrystalDiskMark 6.1.0 Beta1 x64.png',
+        'Untitled - ATTO Disk Benchmark2.png',
+        'TxBENCH - New project.png',
+         "Anvil's Storage Utilities 1.1.0 (2014-January-1).png" ,
+        'HDtune_read_pre.png',
+        'HDtune_write.png',
+        'HDtune_read.png',
+        'PCmark7.PNG',
+        'PCmark8.PNG'
+    ]
+
+
+
+    step = len(images) // len(original_images)
+    print(images)
+    for index, image in enumerate(original_images):
+        shutil.copyfile(image, images[index*step + start -1])
+        #image_add_label(text=time_tag, imagefile=images[index])
+
+    
+
 
     output = shutil.make_archive(time_tag, 'zip', tmp_path)
 
@@ -111,29 +103,29 @@ def image_add_label(text="", imagefile="", output="",
 
 
 if __name__=="__main__":
-
-    while True:
-
-        start = int(input("start:"))
-        step = int(input("step:"))
-        if start in [1,2,3] and step in [1,2,3]:
-            break
-        else:
-            print("start and step must be 1/2/3")
-
-
-    if 1 == step:
-        template = r'template-1.docx'
-    elif 2 == step:
-        template= r'template-2.docx'
-    elif 3 == step:
-        template= r'template-3.docx'
-    else:
-       pass
-
-    output = modify_report(start=start, step=step, output=input("your report name:"), template=template)
-    print("your report : {}".format(output))
-    time.sleep(5)
+    output = modify_report(start=int(input("start:")), output=input("your report name:"), template="template-1.docx")
+    # while True:
+    #
+    #     start = int(input("start:"))
+    #     step = int(input("step:"))
+    #     if start in [1,2,3] and step in [1,2,3]:
+    #         break
+    #     else:
+    #         print("start and step must be 1/2/3")
+    #
+    #
+    # if 1 == step:
+    #     template = r'template-1.docx'
+    # elif 2 == step:
+    #     template= r'template-2.docx'
+    # elif 3 == step:
+    #     template= r'template-3.docx'
+    # else:
+    #    pass
+    #
+    # output = modify_report(start=start, step=step, output=input("your report name:"), template=template)
+    # print("your report : {}".format(output))
+    # time.sleep(5)
 
 
 #shutil.unpack_archive(r'C:\Users\zc\OneDrive\github\WinAuto\report\model.zip', r'C:\Users\zc\OneDrive\github\WinAuto\report')
