@@ -508,8 +508,20 @@ def run_HDtune(disk_number=100):
     write_button = button_center(hwndChildList[15])
     
     start_init = win32gui.GetWindowText(hwndChildList[13])
-    print(start_init)
-    
+    #print(start_init)
+
+    mouse_click(read_button[0], read_button[1])
+    mouse_click(start_button[0], start_button[1])
+
+    start_time = time.time()
+    while win32gui.GetWindowText(hwndChildList[13]) != start_init:
+        time.sleep(1)
+        # elapsed_time = time.time() - start_time
+        # assert elapsed_time < 600 , "timeout!"
+    time.sleep(1)
+    filename = "HDtune_read_pre"
+    output_r = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=filename)
+
     mouse_click(write_button[0],write_button[1])
     mouse_click(start_button[0],start_button[1])
 
