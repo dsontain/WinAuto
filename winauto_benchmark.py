@@ -421,7 +421,7 @@ def run_ATTO_Disk_Benchmark(target = "T", mode = 2, dpeth = 4):
     return filename
 
 def run_TxBENCH(target = "T"):
-
+    target = target.upper()
     tool, tool_path= tool_dic["TXB"]
     hwnd = run_tool(tool , tool_path)
     if not hwnd:
