@@ -14,6 +14,8 @@ import unittest
 import json
 import fire
 import logging
+from PIL import Image, ImageGrab
+
 with open("setting.json",'r',encoding='utf-8') as json_file:
         #json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
         tool_dic = json.load(json_file)
@@ -561,6 +563,95 @@ def run_HDtune(disk_number=100):
     close_window(tool)
     return output_w, output_r
 
+def run_PCmak7(target = 0, image = ""):
+
+    # tool, tool_path= tool_dic["CDI"]
+    # hwnd = run_tool(tool , tool_path)
+    tool = "PCMark 7 Professional Edition v1.4.0"
+    tool_path = r"C:\Program Files\Futuremark\PCMark 7\bin\PCMark7.exe"
+    hwnd = run_tool(tool , tool_path)
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False
+    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 10,10,1038,746, win32con.SWP_SHOWWINDOW)#设置窗口为焦点
+    assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
+    window_base = win32gui.GetWindowRect(hwnd)
+    disk_select = (window_base[0] + 171, window_base[1] + 478)
+    run_button = (window_base[0] + 825, window_base[1] + 215)
+    cnt = win32api.GetLogicalDriveStrings().split(":\\\x00").index(target)
+    mouse_click(disk_select[0], disk_select[1])
+    time.sleep(1)
+    mouse_click(disk_select[0] , disk_select[1]+ (cnt+1)*21)
+    mouse_click(run_button[0], run_button[1])
+    
+    #stop_flag = (window_base[0] + 600, window_base[1] + 220)
+    time.sleep(10)
+    stop_flag = (window_base[0] + 365, window_base[1] + 111)
+    mouse_move(window_base[0] + 365, window_base[1] + 111)
+    mouse_move(window_base[0], window_base[1])
+    init_rgb = ImageGrab.grab(bbox=win32gui.GetWindowRect(hwnd)).getpixel((stop_flag))
+    while ImageGrab.grab(bbox=win32gui.GetWindowRect(hwnd)).getpixel((stop_flag)) == init_rgb :
+        print(ImageGrab.grab(bbox=win32gui.GetWindowRect(hwnd)).getpixel((stop_flag)))
+        time.sleep(1)        
+    filename = tool
+    output_r = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    close_window(tool)
+    #(171 478)
+    # 825 215
+
+    #625 222
+    #target_button = button_center(hwndChildList[2 + target]) #获取所需磁盘的按键
+    #mouse_click(target_button[0] + (cnt+1)*21, target_button[1])
+
+    # #filename = "{}-{}".format(image, tool)
+
+    # filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=tool)
+    # #print("run {} finished!".format(tool))
+    # close_window(tool)
+    # time.sleep(1)
+    # return filename
+
+
+def run_PCmak8(target = 0, image = ""):
+
+    # tool, tool_path= tool_dic["CDI"]
+    # hwnd = run_tool(tool , tool_path)
+    tool = "PCMark 8 Professional Edition "
+    tool_path = r"C:\Program Files\Futuremark\PCMark 8\bin\PCMark8.exe"
+    hwnd = run_tool(tool , tool_path)
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False
+    hwnd_xy = win32gui.GetWindowRect(hwnd)
+    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, hwnd_xy[0],hwnd_xy[1],hwnd_xy[2]-hwnd_xy[0] ,hwnd_xy[3]-hwnd_xy[1], win32con.SWP_SHOWWINDOW)#设置窗口为焦点
+    assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
+    window_base = win32gui.GetWindowRect(hwnd)
+
+    mouse_click(window_base[0] + 999, window_base[1] + 66)
+    mouse_click(window_base[0] + 900, window_base[1] + 200)
+    
+    disk_select = (window_base[0] + 900, window_base[1] + 450)
+    run_button = (window_base[0] + 1100, window_base[1] + 660)
+    
+    cnt = win32api.GetLogicalDriveStrings().split(":\\\x00").index(target)
+    mouse_click(disk_select[0], disk_select[1])
+    time.sleep(1)
+
+    mouse_click(disk_select[0] , disk_select[1]+ (cnt+1)*21)
+    mouse_click(run_button[0], run_button[1])
+    
+    #stop_flag = (window_base[0] + 600, window_base[1] + 220)
+    while win32gui.GetWindowRect(hwnd)[0] >= 0:
+        time.sleep(1)
+
+    while win32gui.GetWindowRect(hwnd)[0] < 0:
+        time.sleep(1)
+    
+    filename = tool
+    output_r = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+    close_window(tool)
+
+    
 if __name__ == "__main__" :
     #print(get_all_child("AS SSD Benchmark 2.0.6694.23026"))
     print(win32api.GetLogicalDriveStrings())
