@@ -6,6 +6,9 @@ import sys
 import diskpart_new
 import logging
 import win32api
+import output_report
+import shutil
+
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - [%(levelname)s] - %(message)s')
 
@@ -42,7 +45,7 @@ class Benchmark(unittest.TestCase):
 
 
         while True:
-            self.target = input("Partition( such as G ) :")
+            self.target = input("Partition( such as G ) :").upper()
             if self.target in win32api.GetLogicalDriveStrings().split(":\\\x00"):
                 print(f"{self.target} already exists, please input a new partition")
             else:
@@ -51,6 +54,9 @@ class Benchmark(unittest.TestCase):
         tag = input("tag:")
         run_path = os.path.join(os.getcwd(), time.strftime(f'win_bench_{tag}_%Y%m%d-%H%M%S',time.localtime(time.time())))
         os.mkdir(run_path)
+        self.template = os.path.abspath("template-1.docx")
+
+
         os.chdir(run_path)
         a.select_disk(self.disk)
         a.create_partition_primary(self.disk, self.target)
@@ -60,16 +66,8 @@ class Benchmark(unittest.TestCase):
     
     @classmethod
     def tearDownClass(self):
-        a = diskpart_new.Diskpart()
-        a.select_disk(self.disk)
-        a.create_partition_primary(self.disk, self.target)
-        a.quit_diskpart()
-        # cmd = 'start "aa" "{}"'.format("C:\Program Files\Futuremark\PCMark 7\bin\PCMark7.exe")
-        # os.system(cmd)
-        # time.sleep(5)
-        # cmd = 'start "aa" "{}"'.format("C:\Program Files\Futuremark\PCMark 8\bin\PCMark8.exe")
-        # os.system(cmd)
-        #get_DiskInfo(self.disk, "end")
+
+        output_report.modify_report(start=1,  output="report", template=self.template)
 
     #@unittest.skip("demonstrating skipping")
     def test_1_ASSD(self):
@@ -88,12 +86,23 @@ class Benchmark(unittest.TestCase):
         run_Anvil(self.target)
     #@unittest.skip("demonstrating skipping")
     def test_6_HDtune(self):
+
         a = diskpart_new.Diskpart()
         a.clean(self.disk)
         a.quit_diskpart()
+
         run_HDtune(self.disk)
 
+        a = diskpart_new.Diskpart()
+        a.select_disk(self.disk)
+        a.create_partition_primary(self.disk, self.target)
+        a.quit_diskpart()
 
+    def test_7_PCmark7(self):
+        run_PCmark7(self.disk)
+
+    def test_7_PCmark8(self):
+        run_PCmark8(self.disk)
 
 if __name__ == '__main__':
 
@@ -112,4 +121,3 @@ if __name__ == '__main__':
         unittest.main()#运行所有的测试用例`
         
 
-            
