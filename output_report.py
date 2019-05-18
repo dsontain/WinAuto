@@ -52,8 +52,8 @@ def modify_report(start=None,  output="", template=r'template.docx', path=None):
         'HDtune_read_pre.png',
         'HDtune_write.png',
         'HDtune_read.png',
-        'PCmark7.PNG',
-        'PCmark8.PNG'
+        'PCMark 7 Professional Edition v1.4.0.PNG',
+        'PCMark 8 Professional Edition .PNG'
     ]
 
 
