@@ -563,7 +563,7 @@ def run_HDtune(disk_number=100):
     close_window(tool)
     return output_w, output_r
 
-def run_PCmak7(target = 0, image = ""):
+def run_PCmark7(target = 0, image = ""):
 
     # tool, tool_path= tool_dic["CDI"]
     # hwnd = run_tool(tool , tool_path)
@@ -592,10 +592,11 @@ def run_PCmak7(target = 0, image = ""):
     init_rgb = ImageGrab.grab(bbox=win32gui.GetWindowRect(hwnd)).getpixel((stop_flag))
     while ImageGrab.grab(bbox=win32gui.GetWindowRect(hwnd)).getpixel((stop_flag)) == init_rgb :
         print(ImageGrab.grab(bbox=win32gui.GetWindowRect(hwnd)).getpixel((stop_flag)))
-        time.sleep(1)        
-    filename = tool
-    output_r = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
+        time.sleep(1)
+
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= tool)
     close_window(tool)
+    return filename
     #(171 478)
     # 825 215
 
@@ -609,10 +610,10 @@ def run_PCmak7(target = 0, image = ""):
     # #print("run {} finished!".format(tool))
     # close_window(tool)
     # time.sleep(1)
-    # return filename
+    # return filenamer
 
 
-def run_PCmak8(target = 0, image = ""):
+def run_PCmark8(target = 0, image = ""):
 
     # tool, tool_path= tool_dic["CDI"]
     # hwnd = run_tool(tool , tool_path)
@@ -646,11 +647,10 @@ def run_PCmak8(target = 0, image = ""):
 
     while win32gui.GetWindowRect(hwnd)[0] < 0:
         time.sleep(1)
-    
-    filename = tool
-    output_r = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
-    close_window(tool)
 
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= tool)
+    close_window(tool)
+    return filename
     
 if __name__ == "__main__" :
     #print(get_all_child("AS SSD Benchmark 2.0.6694.23026"))
