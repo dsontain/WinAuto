@@ -2,8 +2,7 @@ import subprocess
 import time
 import platform
 import re
-# from subprocess import *
-# import re
+
 
 class InteractiveCommand(object):
 
@@ -39,8 +38,9 @@ class InteractiveCommand(object):
             self.process.stdin.write(cmd)
             self.process.stdin.flush()
             return 1
-        else :
+        else:
             return 0
+
     def send_for_get(self, send , get=None):
         if self.send(send):
             return self.find_prompt(get)
@@ -48,10 +48,8 @@ class InteractiveCommand(object):
             pass
 
 
-    
-
-
 class Diskpart(object):
+
     def __init__(self):
         self.op = InteractiveCommand("diskpart", "DISKPART> ")
         self.op.find_prompt().decode("gbk")
@@ -84,7 +82,6 @@ class Diskpart(object):
             return output
         else:
             return b" "
-
 
     def system_disk_check(self, disk=20):
         
@@ -122,6 +119,7 @@ class Diskpart(object):
             return True
         else:
             return False
+
     def quit_diskpart(self):
         self.op.process.communicate(b"exit")
 
