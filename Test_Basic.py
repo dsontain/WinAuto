@@ -66,8 +66,8 @@ class Benchmark(unittest.TestCase):
     
     @classmethod
     def tearDownClass(self):
-
-        output_report.modify_report(start=1,  output="report", template=self.template)
+        output_report.get_report(template=self.template)
+        #output_report.modify_report(start=1,  output="report", template=self.template)
 
     #@unittest.skip("demonstrating skipping")
     def test_1_ASSD(self):
