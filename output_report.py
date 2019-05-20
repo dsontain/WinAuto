@@ -7,6 +7,8 @@ import sys
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+from docxtpl import DocxTemplate, InlineImage
+from docx.shared import Mm
 
 def modify_report(start=None,  output="", template=r'template.docx', path=None):
 
@@ -43,7 +45,7 @@ def modify_report(start=None,  output="", template=r'template.docx', path=None):
                        ]
 
     original_images =[
-        'CrystalDiskInfo 7.6.0.png',
+        'CrystalDiskInfo 7.6.0 .png',
         'AS SSD Benchmark 2.0.6694.23026.png',
         'CrystalDiskMark 6.1.0 Beta1 x64.png',
         'Untitled - ATTO Disk Benchmark2.png',
@@ -100,6 +102,32 @@ def image_add_label(text="", imagefile="", output="",
 
     return output
 
+
+def get_report(output = "generated_doc.docx", template = r"C:\Users\zc\OneDrive\github\WinAuto\template.docx"):
+    tpl = DocxTemplate(template)
+    context = {
+    "Controller" : "2301LT",
+    "FW" : "B001",
+    "CH" : "4",
+    "CE" : "2",
+    "Capacity" : "240G",
+    "Flash" : "B27A",
+    "DDR"  : "NA",
+    "CDI"    : InlineImage(tpl, 'CrystalDiskInfo 7.6.0 .png', width =Mm(108.5), height=Mm(127.7)),
+    "ASSD"   : InlineImage(tpl, 'AS SSD Benchmark 2.0.6694.23026.png', width =Mm(86.2), height=Mm(80.3)),
+    "CDM"    : InlineImage(tpl, 'CrystalDiskMark 6.1.0 Beta1 x64.png', width =Mm(80.4), height=Mm(73.4)),
+    "ATTO"   : InlineImage(tpl, 'Untitled - ATTO Disk Benchmark2.png', width =Mm(101.8), height=Mm(158.6)),
+    "TXB"    : InlineImage(tpl, 'TxBENCH - New project.png', width =Mm(121.5), height=Mm(85.3)),
+    "ANVIL"  : InlineImage(tpl, "Anvil's Storage Utilities 1.1.0 (2014-January-1).png", width =Mm(133), height=Mm(89.7)),
+    "HD_PRE" : InlineImage(tpl, 'HDtune_read_pre.png', width =Mm(111.4), height=Mm(107.5)),
+    "HD_W"   : InlineImage(tpl, 'HDtune_write.png', width =Mm(111.4), height=Mm(107.5)),
+    "HD_R"   : InlineImage(tpl, 'HDtune_read.png', width =Mm(111.4), height=Mm(107.5)),
+    "PC7"    : InlineImage(tpl, 'PCMark 7 Professional Edition v1.4.0.PNG', width =Mm(128.3), height=Mm(98.1)),
+    "PC8"    : InlineImage(tpl, 'PCMark 8 Professional Edition .PNG', width =Mm(139.6), height=Mm(88.1))
+
+    }
+    tpl.render(context)
+    tpl.save(output)
 
 
 if __name__=="__main__":
