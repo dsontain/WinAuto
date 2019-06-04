@@ -10,7 +10,6 @@ import subprocess
 import threading
 import diskpart_tool
 import screenPrt
-import unittest
 import json
 import fire
 import logging
@@ -650,6 +649,8 @@ def run_PCmark8(target = 0, image = ""):
 
     filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= tool)
     close_window(tool)
+    cmd = r'taskkill /F /IM "PCmark8.exe"'
+    os.system(cmd)
     return filename
     
 if __name__ == "__main__" :
