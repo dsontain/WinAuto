@@ -61,7 +61,7 @@ class Diskpart(object):
         diskpool = re.findall(b"\xb4\xc5\xc5\xcc [0-9]+ +\xc1\xaa\xbb\xfa +[0-9]+ [MGTKP]B", output)
         disks = []
         for k in diskpool:
-            disks.append(k.split(b" ")[1])
+            disks.append(str(int(k.split(b" ")[1])))
         return disks
 
     def select_disk(self, disk=200):
@@ -91,7 +91,7 @@ class Diskpart(object):
             return False
 
     def check_disk_being(self, disk=100):
-        if str(disk).encode() in self.list_disk():
+        if str(disk) in self.list_disk():
             return True
         else:
             return False
@@ -125,6 +125,7 @@ class Diskpart(object):
 
    
 if __name__ == "__main__":
-
-    pass
+    dp = Diskpart()
+    print(dp.list_disk())
+    dp.quit_diskpart()
     
