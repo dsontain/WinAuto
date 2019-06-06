@@ -9,7 +9,7 @@ import shutil
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(levelname)s] - %(message)s')
 
 
-TEMPLATE = os.path.abspath("template-1.docx")
+TEMPLATE = os.path.abspath("template.docx")
 dp = diskpart_new.Diskpart()
 for k in dp.list_disk():
     print(f"disk : {k}")
@@ -18,7 +18,6 @@ while True:
     if dp.system_disk_check(TEST_DISK):
         print("Do not select system disk!")
     else:
-        logging.info(f"Test disk : {TEST_DISK}")
         break
 dp.quit_diskpart()
 
@@ -29,7 +28,7 @@ while True:
     if TEST_TARGET in win32api.GetLogicalDriveStrings().split(":\\\x00"):
         print(f"{TEST_TARGET} already exists, please input a new partition")
     else:
-        logging.info(f"Test partition : {TEST_TARGET}")
+
         break
 
 
@@ -44,20 +43,27 @@ class Benchmark(unittest.TestCase):
     def setUpClass(cls):
 
         tag = input("tag:")
+        logging.info(f"Test disk : {TEST_DISK}")
+        logging.info(f"Test partition : {TEST_TARGET}")
         run_path = os.path.join(os.getcwd(),
                                 time.strftime(f'winbench_{tag}_%Y%m%d-%H%M%S', time.localtime(time.time())))
         os.mkdir(run_path)
+        logging.info(f"run_path: {run_path}")
         shutil.copy(TEMPLATE, run_path)
         shutil.copy("output_report.py", run_path)
         os.chdir(run_path)
-
+        logging.info(f"Fomart disk {TEST_DISK} to partition {TEST_TARGET}")
         a = diskpart_new.Diskpart()
         a.select_disk(TEST_DISK)
         a.create_partition_primary(TEST_DISK, TEST_TARGET)
         a.quit_diskpart()
-        get_DiskInfo(TEST_DISK)
+        logging.info(f"Fomart finish!")
+
 
     # @unittest.skip("demonstrating skipping")
+    def test_0_diskinfo(self):
+        get_DiskInfo(TEST_DISK)
+
     def test_1_ASSD(self):
         run_assd(TEST_TARGET)
 
@@ -99,10 +105,17 @@ class Benchmark(unittest.TestCase):
 
 if __name__ == '__main__':
     suite = unittest.TestSuite()
-    test_cases = [Benchmark("test_1_ASSD"), Benchmark("test_2_CDM"), Benchmark("test_3_ATTO"),
-                  Benchmark("test_4_TXbenck"), Benchmark("test_5_Anvil"), Benchmark("test_6_HDtune"),
-                  Benchmark("test_7_PCmark7"),
-                  Benchmark("test_8_PCmark8")]
+    test_cases = [
+                    Benchmark("test_0_diskinfo"),
+                    Benchmark("test_1_ASSD"),
+                    Benchmark("test_2_CDM"),
+                    Benchmark("test_3_ATTO"),
+                    Benchmark("test_4_TXbenck"),
+                    Benchmark("test_5_Anvil"),
+                    Benchmark("test_6_HDtune"),
+                    Benchmark("test_7_PCmark7"),
+                    Benchmark("test_8_PCmark8")
+                  ]
     suite.addTests(test_cases)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
