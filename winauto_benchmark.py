@@ -8,7 +8,7 @@ import ctypes
 import time
 import subprocess
 import threading
-import diskpart_tool
+import diskpart_new
 import screenPrt
 import json
 import fire
@@ -18,8 +18,6 @@ from PIL import Image, ImageGrab
 with open("setting.json",'r',encoding='utf-8') as json_file:
         #json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
         tool_dic = json.load(json_file)
-
-logging.basicConfig(level = logging.INFO,format = '%(asctime)s - [%(levelname)s] - %(message)s')
 
 
 # tool_dic = {
@@ -54,7 +52,7 @@ def get_all_child(tool="Untitled - ATTO Disk Benchmark"):
     function:列出窗口所有子类，类型，名称
     """
 
-    #tool = "Untitled - ATTO Disk Benchmark"
+    # tool = "Untitled - ATTO Disk Benchmark"
     hwnd = win32gui.FindWindow(None, tool)
     hwndChildList = get_child_windows(hwnd)
     score_result = {
@@ -457,13 +455,11 @@ def run_TxBENCH(target = "T"):
     filename = tool
     filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename= filename)
 
-    print("run {} finished!".format(tool))
     close_window(tool)
     return filename
 
 
-
-def get_DiskInfo(target = 0, image = ""):
+def get_DiskInfo(disk = 0, image = ""):
 
     tool, tool_path= tool_dic["CDI"]
     hwnd = run_tool(tool , tool_path)
@@ -474,7 +470,7 @@ def get_DiskInfo(target = 0, image = ""):
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
     hwndChildList = get_child_windows(hwnd)
 
-    target_button = button_center(hwndChildList[2 + target]) #获取所需磁盘的按键
+    target_button = button_center(hwndChildList[2 + disk]) #获取所需磁盘的按键
     mouse_click(target_button[0], target_button[1])
 
     #filename = "{}-{}".format(image, tool)
@@ -486,7 +482,6 @@ def get_DiskInfo(target = 0, image = ""):
     return filename
 
 def run_HDtune(disk_number=100):
-
 
     tool, tool_path= tool_dic["HDtune"]
     hwnd = run_tool(tool , tool_path)
@@ -502,7 +497,10 @@ def run_HDtune(disk_number=100):
 
     disk_select = button_center(hwndChildList[0])
     mouse_click(disk_select[0], disk_select[1], 2)
-    mouse_click(disk_select[0], disk_select[1] + 14 *(disk_number + 1))
+    dp = diskpart_new.Diskpart()
+    disk_select_move_cnt = dp.list_disk().index(str(disk_number))
+    dp.quit_diskpart()
+    mouse_click(disk_select[0], disk_select[1] + 14 *(disk_select_move_cnt + 1))
 
     start_button = button_center(hwndChildList[13])
     read_button = button_center(hwndChildList[14])
