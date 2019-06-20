@@ -9,7 +9,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
-
+import configparser
 def modify_report(start=None,  output="", template=r'template.docx', path=None):
 
     if not path:
@@ -103,24 +103,45 @@ def image_add_label(text="", imagefile="", output="",
     return output
 
 
-def get_report(output = "generated_doc.docx", template = r"template.docx"):
-    tpl = DocxTemplate(template)
+def get_report(output = "", template = r"template.docx", ini="report.ini"):
+    conf = configparser.ConfigParser()
+    conf.read(ini)
+    cfg = dict(conf.items("setting"))
 
-    
+    if output:
+        output = output
+    elif cfg.get("output"):
+        output = f"{ cfg.get('output')}.docx"
+    else:
+        #output = "generated_doc.docx"
+        output = f"{ cfg['Controller']} { cfg['Flash']} { cfg['Capacity']} { cfg['FW']} Windows Tools Report.docx"
+
+
+    tpl = DocxTemplate(template)
     def get_file(filename="", width=0, height=0):
         if os.path.exists(filename):
             return InlineImage(tpl, filename, width =width, height=height)
         else:
             return filename
-        
+
+
+
     context = {
-    "Controller" : "2301LT",
-    "FW" : "B001",
-    "CH" : "4",
-    "CE" : "2",
-    "Capacity" : "240G",
-    "Flash" : "B27A",
-    "DDR"  : "NA",
+    # "Controller" : "2301LT",
+    # "FW" : "B001",
+    # "CH" : "4",
+    # "CE" : "2",
+    # "Capacity" : "240G",
+    # "Flash" : "B27A",
+    # "DDR"  : "NA",
+    "Controller" : cfg.get("Controller"),
+    "FW" : cfg.get("FW"),
+    "CH" : cfg.get("CH"),
+    "CE" : cfg.get("CE"),
+    "Capacity" : cfg.get("Capacity"),
+    "Flash" : cfg.get("Flash"),
+    "DDR"  : cfg.get("DDR"),
+
     "CDI"    : get_file('CrystalDiskInfo 7.6.0 .png', width =Mm(108.5), height=Mm(127.7)),
     "ASSD"   : get_file('AS SSD Benchmark 2.0.6694.23026.png', width =Mm(86.2), height=Mm(80.3)),
     "CDM"    : get_file('CrystalDiskMark 6.1.0 Beta1 x64.png', width =Mm(80.4), height=Mm(73.4)),
