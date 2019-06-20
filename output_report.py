@@ -107,14 +107,14 @@ def get_report(output = "", template = r"template.docx", ini="report.ini"):
     conf = configparser.ConfigParser()
     conf.read(ini)
     cfg = dict(conf.items("setting"))
-
+    print(cfg)
     if output:
         output = output
     elif cfg.get("output"):
-        output = f"{ cfg.get('output')}.docx"
+        output = f"{cfg.get('output')}.docx"
     else:
         #output = "generated_doc.docx"
-        output = f"{ cfg['Controller']} { cfg['Flash']} { cfg['Capacity']} { cfg['FW']} Windows Tools Report.docx"
+        output = f"{cfg['controller']} {cfg['flash']} {cfg['capacity']} {cfg['fw']} Windows Tools Report.docx"
 
 
     tpl = DocxTemplate(template)
@@ -134,13 +134,13 @@ def get_report(output = "", template = r"template.docx", ini="report.ini"):
     # "Capacity" : "240G",
     # "Flash" : "B27A",
     # "DDR"  : "NA",
-    "Controller" : cfg.get("Controller"),
-    "FW" : cfg.get("FW"),
-    "CH" : cfg.get("CH"),
-    "CE" : cfg.get("CE"),
-    "Capacity" : cfg.get("Capacity"),
-    "Flash" : cfg.get("Flash"),
-    "DDR"  : cfg.get("DDR"),
+    "Controller" : cfg.get("controller"),
+    "FW" : cfg.get("fw"),
+    "CH" : cfg.get("ch"),
+    "CE" : cfg.get("ce"),
+    "Capacity" : cfg.get("capacity"),
+    "Flash" : cfg.get("flash"),
+    "DDR"  : cfg.get("ddr"),
 
     "CDI"    : get_file('CrystalDiskInfo 7.6.0 .png', width =Mm(108.5), height=Mm(127.7)),
     "ASSD"   : get_file('AS SSD Benchmark 2.0.6694.23026.png', width =Mm(86.2), height=Mm(80.3)),
