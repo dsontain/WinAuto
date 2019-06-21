@@ -542,7 +542,7 @@ def run_HDtune(disk_number=100):
     return output_w, output_r
 
 
-def run_HDtune_fs(disk_number=100):
+def run_HDtune_fs(target="X"):
     tool, tool_path = tool_dic["HDtune"]
     hwnd = run_tool(tool, tool_path)
     if not hwnd:
@@ -555,7 +555,8 @@ def run_HDtune_fs(disk_number=100):
     disk_select = button_center(hwndChildList[0])
     mouse_click(disk_select[0], disk_select[1], 2)
     dp = diskpart_new.Diskpart()
-    disk_select_move_cnt = dp.list_disk().index(str(disk_number))
+    #disk_select_move_cnt = dp.list_disk().index(str(disk_number))
+    disk_select_move_cnt = dp.volume_to_disk(target)
     dp.quit_diskpart()
     mouse_click(disk_select[0], disk_select[1] + 14 * (disk_select_move_cnt + 1))
 
@@ -566,10 +567,7 @@ def run_HDtune_fs(disk_number=100):
         hwndChildList = get_child_windows(hwnd)
         mouse_click(x1 + 2, y1 + 2)
         time.sleep(2)
-    # if win32gui.GetWindowText(hwndChildList[12]) != "文件基准":
-    #     print(win32gui.GetWindowText(hwndChildList[12]))
-    #     hwndChildList = get_child_windows(hwnd)
-    #     mouse_click(x1 + 2, y1 + 2)
+
     print(win32gui.GetWindowText(hwndChildList[12]))
     hwndChildList = get_child_windows(hwnd)
 
@@ -666,6 +664,6 @@ def run_PCmark8(target=0):
 
 if __name__ == "__main__":
     #print(get_all_child("HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 "))
-    run_HDtune_fs(2)
+    run_HDtune_fs("H")
     #get_DiskInfo("z")
     #print(win32api.GetLogicalDriveStrings())

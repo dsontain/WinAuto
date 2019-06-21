@@ -66,22 +66,44 @@ class Diskpart(object):
 
     def select_disk(self, disk=200):
         assert self.check_disk_being(disk) == True, "No disk {} ".format(disk)
-
         cmd = "select disk {}".format(disk)
         output = self.op.send_for_get(cmd)
-
         if b'\xc4\xe3\xd6\xb8\xb6\xa8\xb5\xc4\xb4\xc5\xc5\xcc\xce\xde\xd0\xa7\xa1\xa3' in output:
-            return False
+            raise Exception(f"select select_disk {disk} failed")
         else:
             return output
 
-    def detail(self, disk=2, info="disk"):
-        cmd = "detail {}".format(info)
-        if self.select_disk(disk):
-            output = self.op.send_for_get(cmd)
-            return output
+    def select_volume(self, volume="G"):
+
+        cmd = f"select volume {volume}"
+        output = self.op.send_for_get(cmd)
+        if b'\xc3\xbb\xd3\xd0\xd1\xa1\xd4\xf1\xbe\xed\xa1\xa3' in output:
+            raise Exception(f"select volume {volume} failed")
         else:
-            return b" "
+            return output
+
+
+    def detail(self, target, info="disk"):
+        cmd = "detail {}".format(info)
+        if info == "disk":
+            self.select_disk(target)
+        elif info == "volume":
+            self.select_volume(target)
+        else:
+            raise Exception(f"Do not support {info}: {cmd} {target}")
+
+        output = self.op.send_for_get(cmd)
+        return output
+
+    def volume_to_disk(self, volume="G"):
+        self.select_volume(volume)
+        output = self.detail(target=volume, info="volume")
+        disk = re.findall(b"\xb4\xc5\xc5\xcc [0-9]", output)
+        if len(disk) == 1:
+            disk = int(disk[0].split()[-1])
+            return disk
+        else:
+            raise Exception(f"find {len(disk)} disk")
 
     def system_disk_check(self, disk=20):
         
@@ -99,9 +121,7 @@ class Diskpart(object):
     def clean(self, disk=100):
 
         assert self.system_disk_check(disk) == False, "\n>>>>>>>>>>ERR：Can't clean system disk"
-
         cmd = "clean"
-
         if b'DiskPart \xb3\xc9\xb9\xa6\xb5\xd8\xc7\xe5\xb3\xfd\xc1\xcb\xb4\xc5\xc5\xcc\xa1\xa3' in self.op.send_for_get(cmd):
             return True
         else:
