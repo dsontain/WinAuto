@@ -49,8 +49,8 @@ def get_all_child(tool="Untitled - ATTO Disk Benchmark"):
     # }
     # L = [(win32gui.GetWindowText(hwndChildList[x])).split()[0] for x in [18, 22, 19 ,17, 23, 21, 30, 31, 5, 7, 6]]
     # print(L)
-    print(hwndChildList)
-    print(win32gui.GetWindowRect(hwnd))
+    #print(hwndChildList)
+    #print(win32gui.GetWindowRect(hwnd))
     a = ""
     for k in hwndChildList:
         b = "[{}]---[{}]---[{}]---[{}]---[{}]".format(hwndChildList.index(k), k,
@@ -80,11 +80,41 @@ def mouse_click(x, y, idle=1, cnt=1):
 
 def keybd_input(input_str, idle=1):
 
-    for key in  input_str:
+    for key in input_str:
         key = ord(key)
         win32api.keybd_event(key, 0, 0, 0)
         win32api.keybd_event(key, 0, win32con.KEYEVENTF_KEYUP, 0)
     time.sleep(idle)
+
+
+def keybd_input_combination(*kb_keys):
+    """
+    Input keyboard combination keys, such as input 16(shift) + 97(1) to get '!'
+    :param kb_keys: keyboard keys, (int)
+    :return: None
+    """
+
+    time.sleep(2)
+    for key in kb_keys:
+        win32api.keybd_event(key, 0, 0, 0)
+        time.sleep(0.2)
+    for key in reversed(kb_keys):
+        win32api.keybd_event(key, 0, win32con.KEYEVENTF_KEYUP, 0)
+
+
+def click_edit_and_input(hwnd, message=""):
+    if win32gui.GetClassName(hwnd) == "Edit":
+        click_handle(hwnd, cnt=2)
+        keybd_input(message)
+    else:
+        raise Exception(f"{hwnd} is not class Edit")
+
+
+def key_input(self, input_words=''):
+    for word in input_words:
+        win32api.keybd_event(VK_CODE[word], 0, 0, 0)
+        win32api.keybd_event(VK_CODE[word], 0, win32con.KEYEVENTF_KEYUP, 0)
+        time.sleep(0.1)
 
 
 def button_center(phwnd):
@@ -100,7 +130,9 @@ def click_handle(phwnd=0, cnt=1, keybd_char=""):
     mouse_click(x, y, cnt=cnt)
 
     if keybd_char:
-        keybd_input(keybd_char)
+        keybd_input(keybd_char, idle=0)
+
+
 
 
 def run_tool(tool="", tool_path="", wait=5):
@@ -480,27 +512,26 @@ def run_HDtune(disk_number=100):
     dp.quit_diskpart()
     mouse_click(disk_select[0], disk_select[1] + 14 * (disk_select_move_cnt + 1))
 
-    # start_button = button_center(hwndChildList[13])
-    # read_button = button_center(hwndChildList[14])
-    # write_button = button_center(hwndChildList[15])
+    x1, y1, x2, y2 = win32gui.GetWindowRect(hwndChildList[6])
+    if win32gui.GetWindowText(hwndChildList[12]) != "文件基准":
+        print(win32gui.GetWindowText(hwndChildList[12]))
+        hwndChildList = get_child_windows(hwnd)
+        mouse_click(x1 + 2, y1 + 2)
+        time.sleep(2)
+
     start_button = hwndChildList[13]
     read_button = hwndChildList[14]
     write_button = hwndChildList[15]
 
     start_init = win32gui.GetWindowText(hwndChildList[13])
-    # print(start_init)
     click_handle(read_button, 1)
     click_handle(start_button, 1)
-    # mouse_click(read_button[0], read_button[1])
-    # mouse_click(start_button[0], start_button[1])
     while win32gui.GetWindowText(hwndChildList[13]) != start_init:
         time.sleep(1)
     time.sleep(1)
     filename = "HDtune_read_pre"
     screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=filename)
 
-    # mouse_click(write_button[0],write_button[1])
-    # mouse_click(start_button[0],start_button[1])
     click_handle(write_button, 1)
     click_handle(start_button, 1)
     
@@ -508,15 +539,11 @@ def run_HDtune(disk_number=100):
     hwnd_ChildList = get_child_windows(hwnd_write_yes_window)
     run_write_button = hwnd_ChildList[3]
     confirm_button = hwnd_ChildList[0]
-    # run_write_button = button_center(hwnd_ChildList[3])
-    # confirm_button =  button_center(hwnd_ChildList[0])
     click_handle(run_write_button, 1)
     time.sleep(2)
     click_handle(confirm_button, 1)
     time.sleep(5)
 
-    # mouse_click(run_write_button[0], run_write_button[1],2)
-    # mouse_click(confirm_button[0], confirm_button[1], 5)
 
     while win32gui.GetWindowText(hwndChildList[13]) != start_init:
         time.sleep(1)
@@ -526,15 +553,13 @@ def run_HDtune(disk_number=100):
     filename = "HDtune_write"
     output_w = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=filename)
     time.sleep(5)
-    # mouse_click(read_button[0], read_button[1])
-    # mouse_click(start_button[0],start_button[1])
+
     click_handle(read_button, 1)
     click_handle(start_button, 1)
 
     while win32gui.GetWindowText(hwndChildList[13]) != start_init:
         time.sleep(1)
-        # elapsed_time = time.time() - start_time
-        # assert elapsed_time < 600 , "timeout!"
+
     time.sleep(1)
     filename = "HDtune_read"
     output_r = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=filename)
@@ -554,10 +579,11 @@ def run_HDtune_fs(target="X"):
     hwndChildList = get_child_windows(hwnd)
     disk_select = button_center(hwndChildList[0])
     mouse_click(disk_select[0], disk_select[1], 2)
+
     dp = diskpart_new.Diskpart()
-    #disk_select_move_cnt = dp.list_disk().index(str(disk_number))
     disk_select_move_cnt = dp.volume_to_disk(target)
     dp.quit_diskpart()
+
     mouse_click(disk_select[0], disk_select[1] + 14 * (disk_select_move_cnt + 1))
 
 
@@ -586,11 +612,10 @@ def run_HDtune_fs(target="X"):
     return output_r
 
 def run_PCmark7(target=0):
-    # tool, tool_path= tool_dic["CDI"]
-    # hwnd = run_tool(tool , tool_path)
+
     tool = "PCMark 7 Professional Edition v1.4.0"
     tool_path = r"C:\Program Files\Futuremark\PCMark 7\bin\PCMark7.exe"
-    hwnd = run_tool(tool, tool_path)
+    hwnd = run_tool(tool, tool_path, 15)
     if not hwnd:
         logging.warning("run {} failed".format(tool_path))
         return False
@@ -626,7 +651,7 @@ def run_PCmark8(target=0):
     # hwnd = run_tool(tool , tool_path)
     tool = "PCMark 8 Professional Edition "
     tool_path = r"C:\Program Files\Futuremark\PCMark 8\bin\PCMark8.exe"
-    hwnd = run_tool(tool, tool_path)
+    hwnd = run_tool(tool, tool_path, 10)
     if not hwnd:
         logging.warning("run {} failed".format(tool_path))
         return False
@@ -654,7 +679,7 @@ def run_PCmark8(target=0):
 
     while win32gui.GetWindowRect(hwnd)[0] < 0:
         time.sleep(1)
-
+    time.sleep(5)
     filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=tool)
     close_window(tool)
     cmd = r'taskkill /F /IM "PCmark8.exe"'
@@ -662,8 +687,60 @@ def run_PCmark8(target=0):
     return filename
 
 
+def run_h2testw(target="H", test_range=0):
+    tool = "H2testw"
+    tool_path = r"D:\SSD performance\h2testw_1.4\h2testw.exe"
+    hwnd = run_tool(tool, tool_path, 4)
+    if not hwnd:
+        logging.warning("run {} failed".format(tool_path))
+        return False
+    hwndChildList = get_child_windows(hwnd)
+    click_handle(hwndChildList[14]) # english
+    click_handle(hwndChildList[0])  #select target
+    time.sleep(4)
+    hwnd_select = win32gui.FindWindow(None, "浏览文件夹")
+    hwnd_select_childList = get_child_windows(hwnd_select)
+    print(hwnd_select_childList)
+    click_handle(hwnd_select_childList[6], cnt=2) # click path
+    keybd_input(target, idle=0)
+    keybd_input_combination(16, 186) # input ：
+    click_handle(hwnd_select_childList[9]) # cofrim
+
+    hwndChildList = get_child_windows(hwnd)
+    if target not in win32gui.GetWindowText(hwndChildList[9]):
+        raise Exception(f"Select {target} failed")
+    if "Existing test data" in win32gui.GetWindowText(hwndChildList[11]):
+        raise Exception(win32gui.GetWindowText(hwndChildList[11]))
+    if test_range == 0:
+        click_handle(hwndChildList[1])# all avalable space
+    else:
+        click_handle(hwndChildList[2])# only some space
+        if test_range < 100:# test_range % by all avalable space, if test_range = 50，test size is 50%
+            test_size = int(win32gui.GetWindowText(hwndChildList[1]).split()[3][1:])*test_range//100
+            click_edit_and_input(hwndChildList[3], str(test_size))
+
+        elif test_range < int(win32gui.GetWindowText(hwndChildList[1]).split()[3][1:]):#test_range is test size 1000M
+            click_edit_and_input(hwndChildList[3], str(test_range))
+        else:
+            raise Exception("run err")
+
+    click_handle(hwndChildList[5])#start
+
+    click_handle(get_child_windows(win32gui.FindWindow(None, "h2testw"))[0])
+    progress_childlist = get_child_windows(win32gui.FindWindow(None, r"H2testw | Progress"))
+    while not win32gui.GetWindowText(progress_childlist[9]):
+        time.sleep(1)
+    while "remaining" in win32gui.GetWindowText(progress_childlist[9]):
+        time.sleep(1)
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=tool)
+    click_handle(progress_childlist[0])
+    win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+
+    #click_handle(hwnd_select_childList[5])#点击开始
 if __name__ == "__main__":
-    #print(get_all_child("HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 "))
-    run_HDtune_fs("H")
+    #print(get_all_child("H2testw | Progress"))
+    #print(get_all_child("浏览文件夹"))
+    #run_HDtune_fs("H")
     #get_DiskInfo("z")
+    run_h2testw("H",1000)
     #print(win32api.GetLogicalDriveStrings())
