@@ -26,7 +26,7 @@ class Benchmark(unittest.TestCase):
 
         tag = input("tag:")
         logging.info(f"Test partition : {TEST_TARGET}")
-        run_path = os.path.join(os.getcwd(), time.strftime(f'winbench_{tag}_%Y%m%d-%H%M%S', time.localtime(time.time())))
+        run_path = os.path.join(os.getcwd(), time.strftime(f'winfs_{tag}_%Y%m%d-%H%M%S', time.localtime(time.time())))
         os.mkdir(run_path)
         logging.info(f"run_path: {run_path}")
         shutil.copy(TEMPLATE, run_path)
@@ -35,38 +35,38 @@ class Benchmark(unittest.TestCase):
         os.chdir(run_path)
         logging.info(f"Fomart finish!")
 
-
     # @unittest.skip("demonstrating skipping")
     def test_0_diskinfo(self):
-        get_DiskInfo(TEST_DISK)
+        get_diskinfo(TEST_TARGET)
 
     def test_1_ASSD(self):
         run_assd(TEST_TARGET)
 
     def test_2_CDM(self):
-        run_CrystalDiskMark5(TEST_TARGET)
+        run_crystal__diskmark(TEST_TARGET)
 
     def test_3_ATTO(self):
-        run_ATTO_Disk_Benchmark(TEST_TARGET)
+        run_atto_disk_benchmark(TEST_TARGET)
 
     def test_4_TXbenck(self):
-        run_TxBENCH(TEST_TARGET)
+        run_txbench(TEST_TARGET)
 
     def test_5_Anvil(self):
-        run_Anvil(TEST_TARGET)
+        run_anvil(TEST_TARGET)
 
     def test_6_HDtune_fs(self):
-        run_HDtune_fs(TEST_TARGET)
+        run_hdtune_fs(TEST_TARGET)
 
     def test_7_PCmark7(self):
-        run_PCmark7(TEST_TARGET)
+        run_pc_mark7(TEST_TARGET)
 
     def test_8_PCmark8(self):
-        run_PCmark8(TEST_TARGET)
+        run_pc_mark8(TEST_TARGET)
 
     @classmethod
     def tearDownClass(cls):
         output_report.get_report(template=TEMPLATE)
+        logging.info("Test finish")
 
 
 if __name__ == '__main__':
@@ -78,7 +78,7 @@ if __name__ == '__main__':
                     Benchmark("test_3_ATTO"),
                     Benchmark("test_4_TXbenck"),
                     Benchmark("test_5_Anvil"),
-                    Benchmark("run_HDtune_fs"),
+                    Benchmark("test_6_HDtune_fs"),
                     Benchmark("test_7_PCmark7"),
                     Benchmark("test_8_PCmark8")
                   ]

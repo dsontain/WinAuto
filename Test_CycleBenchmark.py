@@ -59,22 +59,22 @@ class Benchmark(unittest.TestCase):
         self.images.append(im)
     #@unittest.skip("demonstrating skipping")
     def test_2_CDM(self):
-        im = run_CrystalDiskMark5(self.target)
+        im = run_crystal__diskmark(self.target)
         self.images.append(im)
     #@unittest.skip("demonstrating skipping")
     def test_3_ATTO(self):
-        im = run_ATTO_Disk_Benchmark(self.target)
+        im = run_atto_disk_benchmark(self.target)
         self.images.append(im)
     @unittest.skip("demonstrating skipping")
     def test_4_TXbenck(self):
-        run_TxBENCH(self.target)
+        run_txbench(self.target)
     @unittest.skip("demonstrating skipping")
     def test_5_Anvil(self):
-        run_Anvil(self.target)
+        run_anvil(self.target)
     @unittest.skip("demonstrating skipping")
     def test_6_HDtune(self):
         diskpart_tool.DiskPart.clean(self.disk)
-        run_HDtune(self.disk)
+        run_hdtune(self.disk)
 
 
 if __name__ == '__main__':

@@ -12,8 +12,8 @@ import re
 from PIL import ImageGrab
 
 with open("setting.json", 'r', encoding='utf-8') as json_file:
-        tool_dic = json.load(json_file)
-        # json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
+    tool_dic = json.load(json_file)
+    # json.dump(tool_dic,json_file,ensure_ascii=False,indent=4)
 
 # tool_dic = {
 #     "ASSD"  : ("AS SSD Benchmark 1.9.5986.35387", r"D:\SSD performance\AS SSD Benchmark\AS SSD Benchmark.exe"),
@@ -30,35 +30,35 @@ with open("setting.json", 'r', encoding='utf-8') as json_file:
 
 def get_child_windows(parent):
 
-    hwndChildList = []
-    win32gui.EnumChildWindows(parent, lambda hwnd, param: param.append(hwnd), hwndChildList)
-    return hwndChildList
+    hwnd_child_list = []
+    win32gui.EnumChildWindows(parent, lambda hwnd, param: param.append(hwnd), hwnd_child_list)
+    return hwnd_child_list
 
 
 def get_all_child(tool="Untitled - ATTO Disk Benchmark"):
 
     hwnd = win32gui.FindWindow(None, tool)
-    hwndChildList = get_child_windows(hwnd)
+    hwnd_child_list = get_child_windows(hwnd)
     # score_result = {
-    #     "Seq": (win32gui.GetWindowText(hwndChildList[18]), win32gui.GetWindowText(hwndChildList[22])),
-    #     "4K": (win32gui.GetWindowText(hwndChildList[19]), win32gui.GetWindowText(hwndChildList[17])),
-    #     "4K-64Thrd": (win32gui.GetWindowText(hwndChildList[23]), win32gui.GetWindowText(hwndChildList[21])),
-    #     "Acc.time": (win32gui.GetWindowText(hwndChildList[30]), win32gui.GetWindowText(hwndChildList[31])),
-    #     "score_r_w": (win32gui.GetWindowText(hwndChildList[5]), win32gui.GetWindowText(hwndChildList[7])),
-    #     "Score": win32gui.GetWindowText(hwndChildList[6])
+    #     "Seq": (win32gui.GetWindowText(hwnd_child_list[18]), win32gui.GetWindowText(hwnd_child_list[22])),
+    #     "4K": (win32gui.GetWindowText(hwnd_child_list[19]), win32gui.GetWindowText(hwnd_child_list[17])),
+    #     "4K-64Thrd": (win32gui.GetWindowText(hwnd_child_list[23]), win32gui.GetWindowText(hwnd_child_list[21])),
+    #     "Acc.time": (win32gui.GetWindowText(hwnd_child_list[30]), win32gui.GetWindowText(hwnd_child_list[31])),
+    #     "score_r_w": (win32gui.GetWindowText(hwnd_child_list[5]), win32gui.GetWindowText(hwnd_child_list[7])),
+    #     "Score": win32gui.GetWindowText(hwnd_child_list[6])
     # }
-    # L = [(win32gui.GetWindowText(hwndChildList[x])).split()[0] for x in [18, 22, 19 ,17, 23, 21, 30, 31, 5, 7, 6]]
+    # L = [(win32gui.GetWindowText(hwnd_child_list[x])).split()[0] for x in [18, 22, 19 ,17, 23, 21, 30, 31, 5, 7, 6]]
     # print(L)
-    #print(hwndChildList)
-    #print(win32gui.GetWindowRect(hwnd))
+    # print(hwnd_child_list)
+    # print(win32gui.GetWindowRect(hwnd))
     a = ""
-    for k in hwndChildList:
-        b = "[{}]---[{}]---[{}]---[{}]---[{}]".format(hwndChildList.index(k), k,
+    for k in hwnd_child_list:
+        b = "[{}]---[{}]---[{}]---[{}]---[{}]".format(hwnd_child_list.index(k), k,
                                                       win32gui.GetWindowText(k),
                                                       win32gui.GetClassName(k), win32gui.GetWindowRect(k))
         # print("{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k)))
         if k == 134284:
-            print(hwndChildList.index(k))
+            print(hwnd_child_list.index(k))
         a = a + b + "\n"
     # print(score_result)
     return a
@@ -110,13 +110,6 @@ def click_edit_and_input(hwnd, message=""):
         raise Exception(f"{hwnd} is not class Edit")
 
 
-def key_input(self, input_words=''):
-    for word in input_words:
-        win32api.keybd_event(VK_CODE[word], 0, 0, 0)
-        win32api.keybd_event(VK_CODE[word], 0, win32con.KEYEVENTF_KEYUP, 0)
-        time.sleep(0.1)
-
-
 def button_center(phwnd):
 
     center_xy = win32gui.GetWindowRect(phwnd)
@@ -131,8 +124,6 @@ def click_handle(phwnd=0, cnt=1, keybd_char=""):
 
     if keybd_char:
         keybd_input(keybd_char, idle=0)
-
-
 
 
 def run_tool(tool="", tool_path="", wait=5):
@@ -164,21 +155,21 @@ def run_assd(target="F", size="1G"):
         return False
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383, 140, 0, 0, win32con.SWP_NOSIZE)
 
-    hwndChildList = get_child_windows(hwnd)
+    hwnd_child_list = get_child_windows(hwnd)
 
-    disk_select = hwndChildList[10]
-    write_aactime = hwndChildList[31]
-    size_select = hwndChildList[0]
+    disk_select = hwnd_child_list[10]
+    write_aactime = hwnd_child_list[31]
+    size_select = hwnd_child_list[0]
 
-    score_result = {
-        "Seq": (win32gui.GetWindowText(hwndChildList[18]), win32gui.GetWindowText(hwndChildList[22])),
-        "4K": (win32gui.GetWindowText(hwndChildList[19]), win32gui.GetWindowText(hwndChildList[17])),
-        "4K-64Thrd": (win32gui.GetWindowText(hwndChildList[23]), win32gui.GetWindowText(hwndChildList[21])),
-        "Acc.time": (win32gui.GetWindowText(hwndChildList[30]), win32gui.GetWindowText(hwndChildList[31])),
-        "score_r_w": (win32gui.GetWindowText(hwndChildList[5]), win32gui.GetWindowText(hwndChildList[7])),
-        "Score": win32gui.GetWindowText(hwndChildList[6])
-
-    }
+    # score_result = {
+    #     "Seq": (win32gui.GetWindowText(hwnd_child_list[18]), win32gui.GetWindowText(hwnd_child_list[22])),
+    #     "4K": (win32gui.GetWindowText(hwnd_child_list[19]), win32gui.GetWindowText(hwnd_child_list[17])),
+    #     "4K-64Thrd": (win32gui.GetWindowText(hwnd_child_list[23]), win32gui.GetWindowText(hwnd_child_list[21])),
+    #     "Acc.time": (win32gui.GetWindowText(hwnd_child_list[30]), win32gui.GetWindowText(hwnd_child_list[31])),
+    #     "score_r_w": (win32gui.GetWindowText(hwnd_child_list[5]), win32gui.GetWindowText(hwnd_child_list[7])),
+    #     "Score": win32gui.GetWindowText(hwnd_child_list[6])
+    #
+    # }
 
     click_handle(disk_select, 2, target)
     click_handle(size_select, 2, "3")
@@ -203,7 +194,7 @@ def run_assd(target="F", size="1G"):
     # mouse_click(xy[0], xy[1])
     click_handle(hwnd1, 1)
 
-    score = hwndChildList[6]
+    score = hwnd_child_list[6]
     while win32gui.GetWindowText(score) == r"----" or \
             win32gui.GetWindowText(write_aactime) == r"0.000 ms" or \
             win32gui.GetWindowText(write_aactime) == r"-.-- ms":
@@ -224,7 +215,7 @@ def close_window(window="TxBENCH - New project"):
     win32gui.PostMessage(win32gui.FindWindow(0, window), win32con.WM_CLOSE, 0, 0)
 
 
-def run_CrystalDiskMark5(target="T", size="1G"):
+def run_crystal__diskmark(target="T", size="1G"):
 
     tool, tool_path = tool_dic["CDM"]
     hwnd = run_tool(tool, tool_path)
@@ -236,8 +227,8 @@ def run_CrystalDiskMark5(target="T", size="1G"):
 
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
 
-    hwndChildList = get_child_windows(hwnd)
-    x1, y1, x2, y2 = win32gui.GetWindowRect(hwndChildList[0])
+    hwnd_child_list = get_child_windows(hwnd)
+    x1, y1, x2, y2 = win32gui.GetWindowRect(hwnd_child_list[0])
 
     disk_select_xy = [x1 + 300, y1 + 25]
     start_xy = [x1 + 50, y1 + 35]
@@ -274,14 +265,14 @@ def run_CrystalDiskMark5(target="T", size="1G"):
 
     mouse_click(start_xy[0], start_xy[1])
     if "CrystalDiskMark 5." in tool:
-        run_check = [
+        run_check = (
                     "Sequential Write Multi [5/5]",
                     "Random Write 4KiB Multi [5/5]",
                     "Sequential Write [5/5]",
                     "Random Write 4KiB [5/5]"
-                    ]
+        )
     elif "CrystalDiskMark 6." in tool:
-        run_check = [
+        run_check = (
                     "Sequential Write [5/5]",
                     "Interval Time 1/5 sec",
                     "Random Write 4KiB [5/5]",
@@ -289,7 +280,10 @@ def run_CrystalDiskMark5(target="T", size="1G"):
                     "Random Write 4KiB [5/5]",
                     "Interval Time 1/5 sec",
                     "Random Write 4KiB [5/5]"
-                    ]
+        )
+    else:
+        raise Exception("Not support")
+
     for status in run_check:
         while True:
             if win32gui.GetWindowText(hwnd) != status:
@@ -307,7 +301,7 @@ def run_CrystalDiskMark5(target="T", size="1G"):
     return filename
 
 
-def run_Anvil(target="T"):
+def run_anvil(target="T"):
 
     tool, tool_path = tool_dic["Anvil"]
     hwnd = run_tool(tool, tool_path)
@@ -316,15 +310,15 @@ def run_Anvil(target="T"):
         raise Exception(f"No {tool} ")
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383, 140, 0, 0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
-    hwndChildList = get_child_windows(hwnd)
-    hwnd_QD_Write = win32gui.FindWindow(None, "IO - Threaded QD (Random Write)")
+    hwnd_child_list = get_child_windows(hwnd)
+    hwnd_qd_write = win32gui.FindWindow(None, "IO - Threaded QD (Random Write)")
     
-    # disk_select = button_center(hwndChildList[8])
-    # disk_run = button_center(hwndChildList[14])
-    # disk_tmp = button_center(hwndChildList[10])
-    disk_select = hwndChildList[8]
-    disk_run = hwndChildList[14]
-    disk_tmp = hwndChildList[10]
+    # disk_select = button_center(hwnd_child_list[8])
+    # disk_run = button_center(hwnd_child_list[14])
+    # disk_tmp = button_center(hwnd_child_list[10])
+    disk_select = hwnd_child_list[8]
+    disk_run = hwnd_child_list[14]
+    disk_tmp = hwnd_child_list[10]
     # mouse_click(disk_select[0], disk_select[1])
     # mouse_click(disk_select[0], disk_select[1])
     click_handle(disk_select, 2)
@@ -336,9 +330,9 @@ def run_Anvil(target="T"):
     # mouse_move(disk_select[0], disk_select[1])
     
     for i in range(0, 3):
-        while not win32gui.IsWindowVisible(hwnd_QD_Write):
+        while not win32gui.IsWindowVisible(hwnd_qd_write):
             time.sleep(0.1)
-        while win32gui.IsWindowVisible(hwnd_QD_Write):
+        while win32gui.IsWindowVisible(hwnd_qd_write):
             time.sleep(0.1)
     else:
         time.sleep(3)
@@ -360,7 +354,7 @@ def run_Anvil(target="T"):
     return filename
 
 
-def run_ATTO_Disk_Benchmark(target="T", mode=2, depth=4):
+def run_atto_disk_benchmark(target="T", mode=2, depth=4):
 
     tool, tool_path = tool_dic["ATTO"]
     hwnd = run_tool(tool, tool_path)
@@ -372,22 +366,22 @@ def run_ATTO_Disk_Benchmark(target="T", mode=2, depth=4):
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
 
     mode_hwnd_tag = mode + 10
-    hwndChildList = get_child_windows(hwnd)
+    hwnd_child_list = get_child_windows(hwnd)
 
-    # disk_select = button_center(hwndChildList[2])
+    # disk_select = button_center(hwnd_child_list[2])
     # mouse_click(disk_select[0], disk_select[1])
     # mouse_click(disk_select[0], disk_select[1])
-    disk_select = hwndChildList[2]
+    disk_select = hwnd_child_list[2]
     click_handle(disk_select, 2)
     time.sleep(1)
 
     keybd_input(target)
 
-    mode_select = button_center(hwndChildList[mode_hwnd_tag])
+    mode_select = button_center(hwnd_child_list[mode_hwnd_tag])
     mouse_click(mode_select[0], mode_select[1])
 
-    pattern_button = hwndChildList[15]
-    depth_button = hwndChildList[18]
+    pattern_button = hwnd_child_list[15]
+    depth_button = hwnd_child_list[18]
 
     if mode == 1:
         print(1)
@@ -399,10 +393,10 @@ def run_ATTO_Disk_Benchmark(target="T", mode=2, depth=4):
     else:
         print("else")
 
-    start_button = hwndChildList[27]
+    start_button = hwnd_child_list[27]
     click_handle(start_button, 1)
 
-    while win32gui.GetWindowText(hwndChildList[-10]) == "":
+    while win32gui.GetWindowText(hwnd_child_list[-10]) == "":
         time.sleep(1)
         # elapsed_time = time.time() - start_time
         # assert elapsed_time < 6000 , "timeout!"
@@ -415,7 +409,7 @@ def run_ATTO_Disk_Benchmark(target="T", mode=2, depth=4):
     return filename
 
 
-def run_TxBENCH(target = "T"):
+def run_txbench(target="T"):
     target = target.upper()
     tool, tool_path = tool_dic["TXB"]
     hwnd = run_tool(tool, tool_path)
@@ -424,13 +418,13 @@ def run_TxBENCH(target = "T"):
         return False
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383, 140, 0, 0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
-    hwndChildList = get_child_windows(hwnd)
-    # start_button = button_center(hwndChildList[13])
-    start_button = hwndChildList[13]
+    hwnd_child_list = get_child_windows(hwnd)
+    # start_button = button_center(hwnd_child_list[13])
+    start_button = hwnd_child_list[13]
 
     cnt = win32api.GetLogicalDriveStrings().split(":\\\x00").index(target)
-    # disk_select = button_center(hwndChildList[10])
-    disk_select = hwndChildList[10]
+    # disk_select = button_center(hwnd_child_list[10])
+    disk_select = hwnd_child_list[10]
     click_handle(disk_select, 2)
     # mouse_click(disk_select[0], disk_select[1])
     # mouse_click(disk_select[0], disk_select[1])
@@ -438,13 +432,13 @@ def run_TxBENCH(target = "T"):
         keybd_input("(")
         time.sleep(1)
     
-    start_init = win32gui.GetWindowText(hwndChildList[13])
+    start_init = win32gui.GetWindowText(hwnd_child_list[13])
     # mouse_click(start_button[0], start_button[1])
     click_handle(start_button)
     time.sleep(4)
 
     start_time = time.time()
-    while win32gui.GetWindowText(hwndChildList[13]) != start_init:
+    while win32gui.GetWindowText(hwnd_child_list[13]) != start_init:
         time.sleep(1)
         elapsed_time = time.time() - start_time
         assert elapsed_time < 6000, "timeout!"
@@ -456,7 +450,7 @@ def run_TxBENCH(target = "T"):
     return filename
 
 
-def get_DiskInfo(target):
+def get_diskinfo(target):
     if isinstance(target, int):
         target = f"Disk {target}"
     elif re.match("[a-zA-Z]", target):
@@ -472,28 +466,25 @@ def get_DiskInfo(target):
     if not hwnd:
         logging.warning("run {} failed".format(tool_path))
         return False
-    #win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 2000, 800, win32con.SWP_SHOWWINDOW)
+    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 2000, 800, win32con.SWP_SHOWWINDOW)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
-    hwndChildList = get_child_windows(hwnd)
+    hwnd_child_list = get_child_windows(hwnd)
 
-    for i in hwndChildList[2: 9]:
+    for i in hwnd_child_list[2: 9]:
         if target in win32gui.GetWindowText(i).split("\n")[-1]:
             logging.info(f"click_handle {target} {i}")
             click_handle(i)
             break
-        if i == hwndChildList[9]:
+        if i == hwnd_child_list[9]:
             raise Exception(f"target: {target} not find")
 
-    # filename = "{}-{}".format(image, tool)
-
     filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=tool)
-    # print("run {} finished!".format(tool))
     close_window(tool)
     time.sleep(1)
     return filename
 
 
-def run_HDtune(disk_number=100):
+def run_hdtune(disk_number=100):
 
     tool, tool_path = tool_dic["HDtune"]
     hwnd = run_tool(tool, tool_path)
@@ -503,30 +494,30 @@ def run_HDtune(disk_number=100):
 
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383, 0, 0, 0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
-    hwndChildList = get_child_windows(hwnd)
+    hwnd_child_list = get_child_windows(hwnd)
 
-    disk_select = button_center(hwndChildList[0])
+    disk_select = button_center(hwnd_child_list[0])
     mouse_click(disk_select[0], disk_select[1], 2)
     dp = diskpart_new.Diskpart()
     disk_select_move_cnt = dp.list_disk().index(str(disk_number))
     dp.quit_diskpart()
     mouse_click(disk_select[0], disk_select[1] + 14 * (disk_select_move_cnt + 1))
 
-    x1, y1, x2, y2 = win32gui.GetWindowRect(hwndChildList[6])
-    if win32gui.GetWindowText(hwndChildList[12]) != "文件基准":
-        print(win32gui.GetWindowText(hwndChildList[12]))
-        hwndChildList = get_child_windows(hwnd)
+    x1, y1, x2, y2 = win32gui.GetWindowRect(hwnd_child_list[6])
+    if win32gui.GetWindowText(hwnd_child_list[12]) != "基准":
+        print(win32gui.GetWindowText(hwnd_child_list[12]))
+        hwnd_child_list = get_child_windows(hwnd)
         mouse_click(x1 + 2, y1 + 2)
         time.sleep(2)
 
-    start_button = hwndChildList[13]
-    read_button = hwndChildList[14]
-    write_button = hwndChildList[15]
+    start_button = hwnd_child_list[13]
+    read_button = hwnd_child_list[14]
+    write_button = hwnd_child_list[15]
 
-    start_init = win32gui.GetWindowText(hwndChildList[13])
+    start_init = win32gui.GetWindowText(hwnd_child_list[13])
     click_handle(read_button, 1)
     click_handle(start_button, 1)
-    while win32gui.GetWindowText(hwndChildList[13]) != start_init:
+    while win32gui.GetWindowText(hwnd_child_list[13]) != start_init:
         time.sleep(1)
     time.sleep(1)
     filename = "HDtune_read_pre"
@@ -536,16 +527,15 @@ def run_HDtune(disk_number=100):
     click_handle(start_button, 1)
     
     hwnd_write_yes_window = win32gui.FindWindow(None, "警告!")
-    hwnd_ChildList = get_child_windows(hwnd_write_yes_window)
-    run_write_button = hwnd_ChildList[3]
-    confirm_button = hwnd_ChildList[0]
+    hwnd_child_list = get_child_windows(hwnd_write_yes_window)
+    run_write_button = hwnd_child_list[3]
+    confirm_button = hwnd_child_list[0]
     click_handle(run_write_button, 1)
     time.sleep(2)
     click_handle(confirm_button, 1)
     time.sleep(5)
 
-
-    while win32gui.GetWindowText(hwndChildList[13]) != start_init:
+    while win32gui.GetWindowText(hwnd_child_list[13]) != start_init:
         time.sleep(1)
         # elapsed_time = time.time() - start_time
         # assert elapsed_time < 600 , "timeout!"
@@ -557,7 +547,7 @@ def run_HDtune(disk_number=100):
     click_handle(read_button, 1)
     click_handle(start_button, 1)
 
-    while win32gui.GetWindowText(hwndChildList[13]) != start_init:
+    while win32gui.GetWindowText(hwnd_child_list[13]) != start_init:
         time.sleep(1)
 
     time.sleep(1)
@@ -567,7 +557,7 @@ def run_HDtune(disk_number=100):
     return output_w, output_r
 
 
-def run_HDtune_fs(target="X"):
+def run_hdtune_fs(target="X"):
     tool, tool_path = tool_dic["HDtune"]
     hwnd = run_tool(tool, tool_path)
     if not hwnd:
@@ -576,8 +566,8 @@ def run_HDtune_fs(target="X"):
 
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383, 0, 0, 0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
-    hwndChildList = get_child_windows(hwnd)
-    disk_select = button_center(hwndChildList[0])
+    hwnd_child_list = get_child_windows(hwnd)
+    disk_select = button_center(hwnd_child_list[0])
     mouse_click(disk_select[0], disk_select[1], 2)
 
     dp = diskpart_new.Diskpart()
@@ -586,23 +576,22 @@ def run_HDtune_fs(target="X"):
 
     mouse_click(disk_select[0], disk_select[1] + 14 * (disk_select_move_cnt + 1))
 
-
-    x1, y1, x2, y2 = win32gui.GetWindowRect(hwndChildList[6])
-    if win32gui.GetWindowText(hwndChildList[12]) != "文件基准":
-        print(win32gui.GetWindowText(hwndChildList[12]))
-        hwndChildList = get_child_windows(hwnd)
+    x1, y1, x2, y2 = win32gui.GetWindowRect(hwnd_child_list[6])
+    if win32gui.GetWindowText(hwnd_child_list[12]) != "文件基准":
+        print(win32gui.GetWindowText(hwnd_child_list[12]))
+        hwnd_child_list = get_child_windows(hwnd)
         mouse_click(x1 + 2, y1 + 2)
         time.sleep(2)
 
-    print(win32gui.GetWindowText(hwndChildList[12]))
-    hwndChildList = get_child_windows(hwnd)
+    print(win32gui.GetWindowText(hwnd_child_list[12]))
+    hwnd_child_list = get_child_windows(hwnd)
 
-    start_button = hwndChildList[14]
-    start_init = win32gui.GetWindowText(hwndChildList[14])
+    start_button = hwnd_child_list[14]
+    start_init = win32gui.GetWindowText(hwnd_child_list[14])
 
     click_handle(start_button, 1)
 
-    while win32gui.GetWindowText(hwndChildList[14]) != start_init:
+    while win32gui.GetWindowText(hwnd_child_list[14]) != start_init:
         time.sleep(1)
     time.sleep(1)
 
@@ -611,7 +600,8 @@ def run_HDtune_fs(target="X"):
     close_window(tool)
     return output_r
 
-def run_PCmark7(target=0):
+
+def run_pc_mark7(target=0):
 
     tool = "PCMark 7 Professional Edition v1.4.0"
     tool_path = r"C:\Program Files\Futuremark\PCMark 7\bin\PCMark7.exe"
@@ -638,14 +628,14 @@ def run_PCmark7(target=0):
     init_rgb = ImageGrab.grab(bbox=win32gui.GetWindowRect(hwnd)).getpixel((stop_flag))
     while ImageGrab.grab(bbox=win32gui.GetWindowRect(hwnd)).getpixel((stop_flag)) == init_rgb:
         # print(ImageGrab.grab(bbox=win32gui.GetWindowRect(hwnd)).getpixel((stop_flag)))
-        time.sleep(1)
+        time.sleep(5)
 
     filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=tool)
     close_window(tool)
     return filename
 
 
-def run_PCmark8(target=0):
+def run_pc_mark8(target=0):
 
     # tool, tool_path= tool_dic["CDI"]
     # hwnd = run_tool(tool , tool_path)
@@ -688,59 +678,68 @@ def run_PCmark8(target=0):
 
 
 def run_h2testw(target="H", test_range=0):
+    """
+    run h2testw
+    :param target: volume letter
+    :param test_range: 0- all; 1-99  percent of all ,  >100  real size,  test_range =110 ,test size is 110m;
+    :return: image name
+    """
+
     tool = "H2testw"
     tool_path = r"D:\SSD performance\h2testw_1.4\h2testw.exe"
     hwnd = run_tool(tool, tool_path, 4)
-    if not hwnd:
-        logging.warning("run {} failed".format(tool_path))
-        return False
-    hwndChildList = get_child_windows(hwnd)
-    click_handle(hwndChildList[14]) # english
-    click_handle(hwndChildList[0])  #select target
+
+    hwnd_child_list = get_child_windows(hwnd)
+    click_handle(hwnd_child_list[14])  # english
+    click_handle(hwnd_child_list[0])  # select target
     time.sleep(4)
     hwnd_select = win32gui.FindWindow(None, "浏览文件夹")
-    hwnd_select_childList = get_child_windows(hwnd_select)
-    print(hwnd_select_childList)
-    click_handle(hwnd_select_childList[6], cnt=2) # click path
+    hwnd_select_childlist = get_child_windows(hwnd_select)
+    print(hwnd_select_childlist)
+    click_handle(hwnd_select_childlist[6], cnt=2)  # click path
     keybd_input(target, idle=0)
-    keybd_input_combination(16, 186) # input ：
-    click_handle(hwnd_select_childList[9]) # cofrim
+    keybd_input_combination(16, 186)  # input ：
+    click_handle(hwnd_select_childlist[9])  # cofrim
 
-    hwndChildList = get_child_windows(hwnd)
-    if target not in win32gui.GetWindowText(hwndChildList[9]):
+    hwnd_child_list = get_child_windows(hwnd)
+    if target not in win32gui.GetWindowText(hwnd_child_list[9]):
         raise Exception(f"Select {target} failed")
-    if "Existing test data" in win32gui.GetWindowText(hwndChildList[11]):
-        raise Exception(win32gui.GetWindowText(hwndChildList[11]))
-    if test_range == 0:
-        click_handle(hwndChildList[1])# all avalable space
-    else:
-        click_handle(hwndChildList[2])# only some space
-        if test_range < 100:# test_range % by all avalable space, if test_range = 50，test size is 50%
-            test_size = int(win32gui.GetWindowText(hwndChildList[1]).split()[3][1:])*test_range//100
-            click_edit_and_input(hwndChildList[3], str(test_size))
+    if "Existing test data" in win32gui.GetWindowText(hwnd_child_list[11]):
+        raise Exception(win32gui.GetWindowText(hwnd_child_list[11]))
 
-        elif test_range < int(win32gui.GetWindowText(hwndChildList[1]).split()[3][1:]):#test_range is test size 1000M
-            click_edit_and_input(hwndChildList[3], str(test_range))
+    if test_range == 0:
+        click_handle(hwnd_child_list[1])  # all avaliable space
+    else:
+        click_handle(hwnd_child_list[2])  # only some space
+        if test_range < 100:  # test_range % by all avaliable space, if test_range = 50，test size is 50%
+            test_size = int(win32gui.GetWindowText(hwnd_child_list[1]).split()[3][1:])*test_range//100
+            click_edit_and_input(hwnd_child_list[3], str(test_size))
+
+        elif test_range < int(win32gui.GetWindowText(hwnd_child_list[1]).split()[3][1:]):  # test size 1000M
+            click_edit_and_input(hwnd_child_list[3], str(test_range))
         else:
             raise Exception("run err")
 
-    click_handle(hwndChildList[5])#start
+    click_handle(hwnd_child_list[5])  # start
 
     click_handle(get_child_windows(win32gui.FindWindow(None, "h2testw"))[0])
     progress_childlist = get_child_windows(win32gui.FindWindow(None, r"H2testw | Progress"))
+
     while not win32gui.GetWindowText(progress_childlist[9]):
         time.sleep(1)
     while "remaining" in win32gui.GetWindowText(progress_childlist[9]):
         time.sleep(1)
+    time.sleep(5)
     filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=tool)
     click_handle(progress_childlist[0])
     win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+    return filename
 
-    #click_handle(hwnd_select_childList[5])#点击开始
+
 if __name__ == "__main__":
-    #print(get_all_child("H2testw | Progress"))
-    #print(get_all_child("浏览文件夹"))
-    #run_HDtune_fs("H")
-    #get_DiskInfo("z")
-    run_h2testw("H",1000)
-    #print(win32api.GetLogicalDriveStrings())
+    # #print(get_all_child("H2testw | Progress"))
+    # #print(get_all_child("浏览文件夹"))
+    # #run_HDtune_fs("H")
+    get_diskinfo("z")
+    # run_h2testw("H",1000)
+    # #print(win32api.GetLogicalDriveStrings())

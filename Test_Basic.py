@@ -10,6 +10,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(levelname)s] - 
 
 
 TEMPLATE = os.path.abspath("template.docx")
+REPORT_INI = os.path.abspath("report.ini")
 dp = diskpart_new.Diskpart()
 for k in dp.list_disk():
     print(f"disk : {k}")
@@ -51,6 +52,7 @@ class Benchmark(unittest.TestCase):
         logging.info(f"run_path: {run_path}")
         shutil.copy(TEMPLATE, run_path)
         shutil.copy("output_report.py", run_path)
+        shutil.copy("report.ini", run_path)
         os.chdir(run_path)
         logging.info(f"Fomart disk {TEST_DISK} to partition {TEST_TARGET}")
         a = diskpart_new.Diskpart()
@@ -62,22 +64,22 @@ class Benchmark(unittest.TestCase):
 
     # @unittest.skip("demonstrating skipping")
     def test_0_diskinfo(self):
-        get_DiskInfo(TEST_DISK)
+        get_diskinfo(TEST_DISK)
 
     def test_1_ASSD(self):
         run_assd(TEST_TARGET)
 
     def test_2_CDM(self):
-        run_CrystalDiskMark5(TEST_TARGET)
+        run_crystal__diskmark(TEST_TARGET)
 
     def test_3_ATTO(self):
-        run_ATTO_Disk_Benchmark(TEST_TARGET)
+        run_atto_disk_benchmark(TEST_TARGET)
 
     def test_4_TXbenck(self):
-        run_TxBENCH(TEST_TARGET)
+        run_txbench(TEST_TARGET)
 
     def test_5_Anvil(self):
-        run_Anvil(TEST_TARGET)
+        run_anvil(TEST_TARGET)
 
     def test_6_HDtune(self):
 
@@ -85,7 +87,7 @@ class Benchmark(unittest.TestCase):
         a.clean(TEST_DISK)
         a.quit_diskpart()
 
-        run_HDtune(TEST_DISK)
+        run_hdtune(TEST_DISK)
 
         a = diskpart_new.Diskpart()
         a.select_disk(TEST_DISK)
@@ -93,10 +95,10 @@ class Benchmark(unittest.TestCase):
         a.quit_diskpart()
 
     def test_7_PCmark7(self):
-        run_PCmark7(TEST_TARGET)
+        run_pc_mark7(TEST_TARGET)
 
     def test_8_PCmark8(self):
-        run_PCmark8(TEST_TARGET)
+        run_pc_mark8(TEST_TARGET)
 
     @classmethod
     def tearDownClass(cls):
