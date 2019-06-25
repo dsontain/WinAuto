@@ -87,7 +87,9 @@ class Benchmark(unittest.TestCase):
         a.clean(TEST_DISK)
         a.quit_diskpart()
 
-        run_hdtune(TEST_DISK)
+        run_hdtune_new(disk_number=TEST_DISK, mode="read", filename="HDtune_read_pre")
+        run_hdtune_new(disk_number=TEST_DISK, mode="write", filename="HDtune_write")
+        run_hdtune_new(disk_number=TEST_DISK, mode="read", filename="HDtune_read")
 
         a = diskpart_new.Diskpart()
         a.select_disk(TEST_DISK)

@@ -57,8 +57,6 @@ def get_all_child(tool="Untitled - ATTO Disk Benchmark"):
                                                       win32gui.GetWindowText(k),
                                                       win32gui.GetClassName(k), win32gui.GetWindowRect(k))
         # print("{}:{}:{}".format(win32gui.GetWindowText(k),win32gui.GetClassName(k),win32gui.GetWindowRect(k)))
-        if k == 134284:
-            print(hwnd_child_list.index(k))
         a = a + b + "\n"
     # print(score_result)
     return a
@@ -131,17 +129,16 @@ def run_tool(tool="", tool_path="", wait=5):
     cmd = 'start "aa" "{}"'.format(tool_path)
     os.system(cmd)
     time.sleep(wait)
-
-    for cnt in [1, 1, 0]:
+    hwnd = win32gui.FindWindow(None, tool)
+    cnt = 10
+    while not hwnd:
+        cnt = cnt - 1
+        if cnt == 0 :
+            raise Exception(f"Open tool failed {tool_path} : {hwnd}")
+        logging.warning(f"Open tool failed {tool} : wait 5 s")
         hwnd = win32gui.FindWindow(None, tool)
-        if hwnd:
-            time.sleep(5)
-            break
-        elif cnt:
-            logging.warning("Open tool failed {} : {}".format(tool_path, hwnd))
-            raise Exception("Open tool failed!")
-        else:
-            time.sleep(10)
+        time.sleep(5)
+
     logging.info("run {} : {}".format(tool_path, hwnd))
     return hwnd
 
@@ -488,9 +485,6 @@ def run_hdtune(disk_number=100):
 
     tool, tool_path = tool_dic["HDtune"]
     hwnd = run_tool(tool, tool_path)
-    if not hwnd:
-        logging.warning("run {} failed".format(tool_path))
-        return False
 
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383, 0, 0, 0, win32con.SWP_NOSIZE)
     assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
@@ -515,6 +509,8 @@ def run_hdtune(disk_number=100):
     write_button = hwnd_child_list[15]
 
     start_init = win32gui.GetWindowText(hwnd_child_list[13])
+
+
     click_handle(read_button, 1)
     click_handle(start_button, 1)
     while win32gui.GetWindowText(hwnd_child_list[13]) != start_init:
@@ -555,6 +551,59 @@ def run_hdtune(disk_number=100):
     output_r = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=filename)
     close_window(tool)
     return output_w, output_r
+
+
+def run_hdtune_new(disk_number=100, mode="read", filename=""):
+    tool, tool_path = tool_dic["HDtune"]
+    hwnd = run_tool(tool, tool_path)
+
+    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 383, 0, 0, 0, win32con.SWP_NOSIZE)
+    assert win32gui.GetWindowText(hwnd) == tool, "run tool name wrong!"
+    hwnd_child_list = get_child_windows(hwnd)
+
+    disk_select = button_center(hwnd_child_list[0])
+    mouse_click(disk_select[0], disk_select[1], 2)
+    dp = diskpart_new.Diskpart()
+    disk_select_move_cnt = dp.list_disk().index(str(disk_number))
+    dp.quit_diskpart()
+    mouse_click(disk_select[0], disk_select[1] + 14 * (disk_select_move_cnt + 1))
+
+    x1, y1, x2, y2 = win32gui.GetWindowRect(hwnd_child_list[6])
+    if win32gui.GetWindowText(hwnd_child_list[12]) != "基准":
+        print(win32gui.GetWindowText(hwnd_child_list[12]))
+        hwnd_child_list = get_child_windows(hwnd)
+        mouse_click(x1 + 2, y1 + 2)
+        time.sleep(2)
+
+    start_button = hwnd_child_list[13]
+    read_button = hwnd_child_list[14]
+    write_button = hwnd_child_list[15]
+
+    start_init = win32gui.GetWindowText(hwnd_child_list[13])
+
+    if mode == "read":
+        click_handle(read_button, 1)
+        click_handle(start_button, 1)
+    elif mode == "write":
+        click_handle(write_button, 1)
+        click_handle(start_button, 1)
+        hwnd_write_yes_window = win32gui.FindWindow(None, "警告!")
+        hwnd_child_list = get_child_windows(hwnd_write_yes_window)
+        run_write_button = hwnd_child_list[3]
+        confirm_button = hwnd_child_list[0]
+        click_handle(run_write_button, 1)
+        click_handle(confirm_button, 1)
+        time.sleep(5)
+    else:
+        raise Exception(f"Wrong test mode {mode}")
+    while win32gui.GetWindowText(hwnd_child_list[13]) != start_init:
+        time.sleep(1)
+
+    if not filename:
+        filename = f"hdtune_{mode}"
+    filename = screenPrt.ScreenPrintWin().save_bitmap(bmp_filename=filename, need_png=True)
+    win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+    return filename
 
 
 def run_hdtune_fs(target="X"):
@@ -737,9 +786,12 @@ def run_h2testw(target="H", test_range=0):
 
 
 if __name__ == "__main__":
+    #print(win32gui.FindWindow(None, "HD Tune Pro 5.60 - 硬盘/固态硬盘实用程序 "))
     # #print(get_all_child("H2testw | Progress"))
     # #print(get_all_child("浏览文件夹"))
-    # #run_HDtune_fs("H")
-    get_diskinfo("z")
+    # run_hdtune_fs("H")
+    #run_assd("H")
+    #get_diskinfo("z")
+    run_hdtune_new(disk_number=2, mode="read", filename="tt")
     # run_h2testw("H",1000)
     # #print(win32api.GetLogicalDriveStrings())
